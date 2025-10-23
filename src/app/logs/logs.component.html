@@ -1,0 +1,85 @@
+<section class="logs-page">
+  <div class="page-header">
+    <div>
+      <h2>Logs de backup</h2>
+      <p>Acompanhe os arquivos enviados pelos agentes.</p>
+    </div>
+
+    <mat-form-field appearance="outline" class="client-filter">
+      <mat-label>Cliente</mat-label>
+      <mat-select
+        [value]="selectedClientId()"
+        (valueChange)="onClientChange($event)"
+        placeholder="Selecione um cliente"
+      >
+        <mat-option *ngFor="let cliente of clientes()" [value]="cliente.client_id">
+          {{ cliente.nome_empresa }} ({{ cliente.client_id }})
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <mat-card class="logs-card">
+    <mat-card-content>
+      <ng-container *ngIf="selectedClientId(); else emptySelection">
+        <div *ngIf="loading(); else tableContent" class="loading-state">
+          <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+          <span>Carregando logs...</span>
+        </div>
+      </ng-container>
+
+      <ng-template #tableContent>
+        <div class="table-wrapper">
+          <table mat-table [dataSource]="logs()" class="mat-elevation-z1">
+            <ng-container matColumnDef="client_id">
+              <th mat-header-cell *matHeaderCellDef>Client ID</th>
+              <td mat-cell *matCellDef="let log">{{ log.client_id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="file_name">
+              <th mat-header-cell *matHeaderCellDef>Arquivo</th>
+              <td mat-cell *matCellDef="let log">{{ log.file_name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="file_size_bytes">
+              <th mat-header-cell *matHeaderCellDef>Tamanho</th>
+              <td mat-cell *matCellDef="let log">{{ log.file_size_bytes | fileSize: 2 }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="file_creation_date">
+              <th mat-header-cell *matHeaderCellDef>Data do arquivo</th>
+              <td mat-cell *matCellDef="let log">
+                {{ log.file_creation_date | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="created_at">
+              <th mat-header-cell *matHeaderCellDef>Registrado em</th>
+              <td mat-cell *matCellDef="let log">
+                {{ log.created_at | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+          <p class="empty-state" *ngIf="logs().length === 0">
+            Nenhum log encontrado para o cliente selecionado.
+          </p>
+        </div>
+
+        <mat-paginator
+          [length]="total()"
+          [pageIndex]="pageIndex()"
+          [pageSize]="pageSize()"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="handlePage($event)"
+        ></mat-paginator>
+      </ng-template>
+
+      <ng-template #emptySelection>
+        <p class="empty-state">Selecione um cliente para visualizar os logs.</p>
+      </ng-template>
+    </mat-card-content>
+  </mat-card>
+</section>

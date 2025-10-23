@@ -1,0 +1,39 @@
+:root {
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  background: #ffffff;
+  color: #1d1d1d;
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background-color: #1d1d1d;
+  color: #ffffff;
+}
+
+button[mat-flat-button][color='primary'],
+button[mat-raised-button][color='primary'],
+button[mat-stroked-button][color='primary'],
+button[mat-fab][color='primary'],
+button[mat-mini-fab][color='primary'] {
+  background-color: #127f0b;
+  color: #ffffff;
+}
+
+button[mat-stroked-button][color='primary'] {
+  border-color: #127f0b;
+  color: #127f0b;
+  background-color: transparent;
+}

@@ -1,0 +1,108 @@
+<section class="clientes-page">
+  <div class="page-header">
+    <div>
+      <h2>Clientes</h2>
+      <p>Gerencie as empresas que utilizam o agente de backup.</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="startCreate()">Adicionar novo</button>
+  </div>
+
+  <div class="page-content">
+    <mat-card class="cliente-form-card">
+      <mat-card-header>
+        <mat-card-title>
+          {{ formMode() === 'create' ? 'Cadastrar cliente' : 'Editar cliente' }}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="clienteForm" (ngSubmit)="submit()" class="cliente-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Client ID</mat-label>
+            <input matInput formControlName="client_id" placeholder="Identificador único" />
+            <mat-error *ngIf="clienteForm.controls.client_id.hasError('required')">
+              Informe o identificador do cliente.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nome da empresa</mat-label>
+            <input matInput formControlName="nome_empresa" placeholder="Nome da empresa" />
+            <mat-error *ngIf="clienteForm.controls.nome_empresa.hasError('required')">
+              Informe o nome da empresa.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>CNPJ</mat-label>
+            <input
+              matInput
+              formControlName="cnpj_empresa"
+              placeholder="00.000.000/0000-00"
+              maxlength="18"
+              (input)="formatCnpjInput($event)"
+            />
+            <mat-error *ngIf="clienteForm.controls.cnpj_empresa.hasError('required')">
+              Informe o CNPJ.
+            </mat-error>
+            <mat-error *ngIf="clienteForm.controls.cnpj_empresa.hasError('pattern')">
+              Utilize o formato 00.000.000/0000-00.
+            </mat-error>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-stroked-button type="button" (click)="startCreate()">Cancelar</button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+              {{ formMode() === 'create' ? 'Cadastrar' : 'Salvar alterações' }}
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <section class="clientes-table">
+      <div class="table-wrapper" *ngIf="!loading(); else loadingState">
+        <table mat-table [dataSource]="clientes()" class="mat-elevation-z1">
+          <ng-container matColumnDef="client_id">
+            <th mat-header-cell *matHeaderCellDef>Client ID</th>
+            <td mat-cell *matCellDef="let cliente">{{ cliente.client_id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="nome_empresa">
+            <th mat-header-cell *matHeaderCellDef>Empresa</th>
+            <td mat-cell *matCellDef="let cliente">{{ cliente.nome_empresa }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="cnpj_empresa">
+            <th mat-header-cell *matHeaderCellDef>CNPJ</th>
+            <td mat-cell *matCellDef="let cliente">{{ cliente.cnpj_empresa }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let cliente">
+              <button mat-icon-button aria-label="Editar" (click)="startEdit(cliente)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button aria-label="Excluir" color="warn" (click)="delete(cliente)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+        <p class="empty-state" *ngIf="clientes().length === 0">
+          Nenhum cliente cadastrado até o momento.
+        </p>
+      </div>
+
+      <ng-template #loadingState>
+        <div class="loading-state">
+          <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+          <span>Carregando clientes...</span>
+        </div>
+      </ng-template>
+    </section>
+  </div>
+</section>

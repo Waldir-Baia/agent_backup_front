@@ -1,0 +1,59 @@
+<main class="login-page">
+  <section class="login-card">
+    <div class="login-card__logo">
+      <img src="assets/wbn-logo.svg" alt="WBN" />
+    </div>
+    <div class="login-card__body">
+      <header class="login-card__header">
+        <h1>Bem-vindo de volta</h1>
+        <p>Entre com suas credenciais para continuar.</p>
+      </header>
+
+      <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <label class="form-field">
+          <span>Usuário</span>
+          <input
+            type="text"
+            inputmode="text"
+            formControlName="username"
+            placeholder="Nome do usuário"
+            autocomplete="username"
+          />
+          @if (loginForm.controls.username.invalid && loginForm.controls.username.touched) {
+            <small class="form-field__feedback">Informe o nome do usuário.</small>
+          }
+        </label>
+
+        <label class="form-field">
+          <span>Senha</span>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="Digite sua senha"
+            autocomplete="current-password"
+          />
+          @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
+            <small class="form-field__feedback">Informe sua senha.</small>
+          }
+        </label>
+
+        @if (errorMessage()) {
+          <p class="login-form__error">{{ errorMessage() }}</p>
+        }
+
+        <button
+          type="submit"
+          class="login-form__submit"
+          [style.background]="brandColor"
+          [disabled]="submitting()"
+        >
+          @if (submitting()) {
+            Autenticando...
+          } @else {
+            Entrar
+          }
+        </button>
+      </form>
+    </div>
+  </section>
+</main>

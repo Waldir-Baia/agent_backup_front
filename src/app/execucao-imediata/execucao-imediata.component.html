@@ -1,0 +1,102 @@
+<section class="execucao-page">
+  <div class="page-header">
+    <div>
+      <h2>Execução imediata</h2>
+      <p>Dispare comandos pontuais para um agente específico.</p>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <mat-card class="execucao-form-card">
+      <mat-card-header>
+        <mat-card-title>Enviar comando agora</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="execucaoForm" (ngSubmit)="submit()" class="execucao-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Cliente</mat-label>
+            <mat-select formControlName="client_id" placeholder="Selecione um cliente">
+              <mat-option *ngFor="let cliente of clientes()" [value]="cliente.client_id">
+                {{ cliente.nome_empresa }} ({{ cliente.client_id }})
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="execucaoForm.controls.client_id.hasError('required')">
+              Selecione o cliente.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nome da tarefa</mat-label>
+            <input matInput formControlName="nome_tarefa" placeholder="Descrição rápida" />
+            <mat-error *ngIf="execucaoForm.controls.nome_tarefa.hasError('required')">
+              Informe uma descrição.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Comando Rclone</mat-label>
+            <textarea matInput formControlName="comando" rows="4" placeholder="rclone lsd …"></textarea>
+            <mat-error *ngIf="execucaoForm.controls.comando.hasError('required')">
+              Informe o comando que será enviado.
+            </mat-error>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-flat-button color="primary" type="submit" [disabled]="submitting()">
+              Executar agora
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="historico-card">
+      <mat-card-header>
+        <mat-card-title>Últimas execuções</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <ng-container *ngIf="!loadingHistorico(); else loadingState">
+          <p class="empty-state" *ngIf="historico().length === 0">
+            Selecione um cliente para visualizar o histórico.
+          </p>
+
+          <table
+            mat-table
+            [dataSource]="historico()"
+            class="mat-elevation-z1"
+            *ngIf="historico().length > 0"
+          >
+            <ng-container matColumnDef="created_at">
+              <th mat-header-cell *matHeaderCellDef>Data</th>
+              <td mat-cell *matCellDef="let item">
+                {{ item.created_at | date: 'dd/MM/yyyy HH:mm' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="nome_tarefa">
+              <th mat-header-cell *matHeaderCellDef>Tarefa</th>
+              <td mat-cell *matCellDef="let item">{{ item.nome_tarefa }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="comando">
+              <th mat-header-cell *matHeaderCellDef>Comando</th>
+              <td mat-cell *matCellDef="let item">
+                <code>{{ item.comando }}</code>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        </ng-container>
+
+        <ng-template #loadingState>
+          <div class="loading-state">
+            <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+            <span>Carregando histórico...</span>
+          </div>
+        </ng-template>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</section>

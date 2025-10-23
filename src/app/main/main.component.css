@@ -1,0 +1,95 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.layout-container {
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.layout-sidenav {
+  width: 240px;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  gap: 1.5rem;
+}
+
+.sidenav-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(29, 29, 29, 0.75);
+}
+
+.sidenav-brand {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1d1d1d;
+}
+
+.sidenav-logo {
+  width: 48px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.sidenav-header__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.active-link {
+  background-color: rgba(18, 127, 11, 0.08) !important;
+}
+
+.sidenav-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.sidenav-footer button {
+  width: 100%;
+  justify-content: center;
+  color: #ffffff;
+  background-color: #127f0b;
+}
+
+.layout-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #ffffff;
+  color: #1d1d1d;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.layout-toolbar .toolbar-toggle {
+  margin-right: 1rem;
+}
+
+.layout-toolbar .toolbar-toggle mat-icon {
+  color: #127f0b;
+}
+
+.layout-content {
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+.layout-page {
+  padding: 2rem;
+  background: #ffffff;
+  color: #1d1d1d;
+}
+
+@media (max-width: 960px) {
+  .layout-sidenav {
+    width: 220px;
+  }
+}

@@ -1,0 +1,48 @@
+<mat-sidenav-container class="layout-container">
+  <mat-sidenav
+    class="layout-sidenav"
+    [opened]="sidenavOpened()"
+    mode="side"
+    [fixedInViewport]="false"
+  >
+    <div class="sidenav-header">
+      <img class="sidenav-logo" src="assets/wbn-logo.svg" alt="WBN" />
+      <div class="sidenav-header__info">
+        <span class="sidenav-brand">Agent Backup</span>
+        <small *ngIf="user()?.nome">Olá, {{ user()?.nome }}</small>
+      </div>
+    </div>
+    <mat-nav-list>
+      <a
+        mat-list-item
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        routerLinkActive="active-link"
+      >
+        <mat-icon matListIcon>{{ item.icon }}</mat-icon>
+        <span matLine>{{ item.label }}</span>
+      </a>
+    </mat-nav-list>
+    <div class="sidenav-footer">
+      <button mat-flat-button (click)="signOut()">Sair</button>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="layout-content">
+    <mat-toolbar class="layout-toolbar">
+      <button
+        mat-icon-button
+        class="toolbar-toggle"
+        (click)="toggleSidenav()"
+        aria-label="Abrir menu"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>Painel de Controle</span>
+    </mat-toolbar>
+
+    <section class="layout-page">
+      <router-outlet />
+    </section>
+  </mat-sidenav-content>
+</mat-sidenav-container>

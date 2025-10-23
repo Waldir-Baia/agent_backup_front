@@ -1,0 +1,108 @@
+:host {
+  display: block;
+}
+
+.clientes-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.page-header p {
+  margin: 0.25rem 0 0;
+  color: rgba(29, 29, 29, 0.7);
+}
+
+.page-content {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  gap: 1.5rem;
+}
+
+.cliente-form-card {
+  background: #ffffff;
+}
+
+.cliente-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.form-actions button[mat-flat-button] {
+  background-color: #127f0b;
+  color: #ffffff;
+}
+
+.form-actions button[mat-stroked-button] {
+  border-color: rgba(18, 127, 11, 0.35);
+  color: #127f0b;
+}
+
+.clientes-table {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px -16px rgba(0, 0, 0, 0.35);
+}
+
+.table-wrapper {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-header-cell {
+  color: rgba(29, 29, 29, 0.7);
+  font-weight: 600;
+}
+
+td.mat-cell,
+th.mat-header-cell {
+  padding: 0.75rem;
+}
+
+.empty-state {
+  text-align: center;
+  margin: 1.5rem 0 0;
+  color: rgba(29, 29, 29, 0.6);
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: rgba(29, 29, 29, 0.6);
+}
+
+button[mat-icon-button][color='warn'] mat-icon {
+  color: #d32f2f;
+}
+
+@media (max-width: 960px) {
+  .page-content {
+    grid-template-columns: 1fr;
+  }
+}

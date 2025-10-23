@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
@@ -31,7 +32,7 @@ type FormMode = 'create' | 'edit';
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
+    MatAutocompleteModule,
     MatOptionModule,
     MatButtonModule,
     MatIconModule,
@@ -63,8 +64,35 @@ export class AgendamentosComponent {
   protected readonly saving = signal(false);
   protected readonly formMode = signal<FormMode>('create');
   protected readonly editingAgendamento = signal<Agendamento | null>(null);
+  protected readonly isFormVisible = signal(false);
+
+  protected readonly clientFilterControl = this.formBuilder.nonNullable.control('');
+  protected readonly clientNameControl = this.formBuilder.nonNullable.control('');
+  protected readonly clientSearchTerm = signal('');
+  protected readonly formClientSearchTerm = signal('');
+
+  protected readonly filteredClientes = computed(() =>
+    this.filterClientes(this.clientSearchTerm())
+  );
+  protected readonly filteredFormClientes = computed(() =>
+    this.filterClientes(this.formClientSearchTerm())
+  );
+  protected readonly clientDisplayWith = (clientId: string | null): string => {
+    if (!clientId) {
+      return '';
+    }
+    const cliente = this.clientes().find((item) => item.client_id === clientId);
+    if (!cliente) {
+      return clientId;
+    }
+    const formattedCnpj = this.formatCnpj(cliente.cnpj_empresa);
+    return formattedCnpj
+      ? `${cliente.nome_empresa} - ${formattedCnpj}`
+      : cliente.nome_empresa;
+  };
 
   protected readonly agendamentoForm = this.formBuilder.nonNullable.group({
+    client_id: ['', Validators.required],
     schedule_name: ['', Validators.required],
     rclone_command: ['', Validators.required],
     cron_expression: ['', Validators.required],
@@ -74,9 +102,37 @@ export class AgendamentosComponent {
 
   constructor() {
     this.loadClientes();
+
+    this.clientFilterControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((value) => {
+        this.clientSearchTerm.set(value.trim().toLowerCase());
+      });
+
+    this.clientNameControl.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((value) => {
+        const normalized = value.trim().toLowerCase();
+        this.formClientSearchTerm.set(normalized);
+        if (!value) {
+          this.agendamentoForm.controls.client_id.setValue('', { emitEvent: false });
+        }
+      });
+
     effect(() => {
       if (this.formMode() === 'create') {
         this.editingAgendamento.set(null);
+      }
+    });
+
+    effect(() => {
+      const selectedId = this.selectedClientId();
+      if (!selectedId) {
+        return;
+      }
+      const exists = this.clientes().some((cliente) => cliente.client_id === selectedId);
+      if (!exists) {
+        this.clearClientSelection();
       }
     });
   }
@@ -93,13 +149,32 @@ export class AgendamentosComponent {
     }
   }
 
-  protected async onClientChange(clientId: string): Promise<void> {
-    this.selectedClientId.set(clientId);
-    this.startCreate();
-    await this.loadAgendamentos(clientId);
+  protected async onClientSelected(clientId: string): Promise<void> {
+    const cliente = this.clientes().find((item) => item.client_id === clientId);
+    if (!cliente) {
+      return;
+    }
+
+    this.clientFilterControl.setValue(cliente.client_id, { emitEvent: false });
+    this.clientSearchTerm.set('');
+    this.selectedClientId.set(cliente.client_id);
+    this.closeForm();
+    await this.loadAgendamentos(cliente.client_id);
+  }
+
+  protected clearClientSelection(): void {
+    this.selectedClientId.set(null);
+    this.clientFilterControl.setValue('', { emitEvent: false });
+    this.clientSearchTerm.set('');
+    this.agendamentos.set([]);
   }
 
   protected async loadAgendamentos(clientId: string): Promise<void> {
+    if (!clientId) {
+      this.agendamentos.set([]);
+      return;
+    }
+
     this.loading.set(true);
     try {
       const data = await this.supabaseService.listAgendamentos(clientId);
@@ -114,37 +189,55 @@ export class AgendamentosComponent {
     }
   }
 
-  protected startCreate(): void {
+  protected showCreateForm(): void {
     this.formMode.set('create');
-    this.agendamentoForm.reset({
-      schedule_name: '',
-      rclone_command: '',
-      cron_expression: '',
-      remote_path: '',
-      is_active: true
-    });
+    this.editingAgendamento.set(null);
+    this.resetForm(this.selectedClientId());
+    this.isFormVisible.set(true);
   }
 
   protected startEdit(agendamento: Agendamento): void {
     this.formMode.set('edit');
     this.editingAgendamento.set(agendamento);
     this.agendamentoForm.setValue({
+      client_id: agendamento.client_id,
       schedule_name: agendamento.schedule_name,
       rclone_command: agendamento.rclone_command,
       cron_expression: agendamento.cron_expression,
       remote_path: agendamento.remote_path ?? '',
       is_active: agendamento.is_active
     });
+    this.clientNameControl.setValue(agendamento.client_id, { emitEvent: false });
+    this.formClientSearchTerm.set('');
+    this.isFormVisible.set(true);
+  }
+
+  protected closeForm(): void {
+    this.isFormVisible.set(false);
+    this.formMode.set('create');
+    this.editingAgendamento.set(null);
+    this.resetForm(this.selectedClientId());
+  }
+
+  protected onFormClientSelected(clientId: string): void {
+    this.agendamentoForm.controls.client_id.setValue(clientId);
+    this.clientNameControl.setValue(clientId, { emitEvent: false });
+    this.formClientSearchTerm.set('');
   }
 
   protected async submit(): Promise<void> {
-    if (this.agendamentoForm.invalid || !this.selectedClientId()) {
+    if (this.agendamentoForm.invalid) {
       this.agendamentoForm.markAllAsTouched();
       return;
     }
 
-    const clientId = this.selectedClientId()!;
     const formValue = this.agendamentoForm.getRawValue();
+    const clientId = formValue.client_id.trim();
+    if (!clientId) {
+      this.agendamentoForm.controls.client_id.setErrors({ required: true });
+      return;
+    }
+
     this.saving.set(true);
 
     try {
@@ -168,6 +261,7 @@ export class AgendamentosComponent {
           throw new Error('Agendamento para edição não encontrado.');
         }
         const payload: AgendamentoUpdate = {
+          client_id: clientId,
           schedule_name: formValue.schedule_name.trim(),
           rclone_command: formValue.rclone_command.trim(),
           cron_expression: formValue.cron_expression.trim(),
@@ -183,7 +277,10 @@ export class AgendamentosComponent {
         });
       }
 
-      this.startCreate();
+      this.selectedClientId.set(clientId);
+      this.clientFilterControl.setValue(clientId, { emitEvent: false });
+      this.clientSearchTerm.set('');
+      this.closeForm();
     } catch (error) {
       console.error('Erro ao salvar agendamento', error);
       this.snackBar.open('Não foi possível salvar o agendamento.', 'Fechar', {
@@ -195,6 +292,55 @@ export class AgendamentosComponent {
         await this.loadAgendamentos(clientId);
       }
     }
+  }
+
+  private resetForm(defaultClientId: string | null): void {
+    this.agendamentoForm.reset({
+      client_id: defaultClientId ?? '',
+      schedule_name: '',
+      rclone_command: '',
+      cron_expression: '',
+      remote_path: '',
+      is_active: true
+    });
+    this.clientNameControl.setValue(defaultClientId ?? '', { emitEvent: false });
+    this.formClientSearchTerm.set('');
+  }
+
+  private filterClientes(term: string): Cliente[] {
+    const normalized = term.trim().toLowerCase();
+    if (!normalized) {
+      return this.clientes();
+    }
+
+    const searchDigits = normalized.replace(/\D/g, '');
+
+    return this.clientes().filter((cliente) => {
+      const nome = cliente.nome_empresa?.toLowerCase() ?? '';
+      const id = cliente.client_id?.toLowerCase() ?? '';
+      const cnpjDigits = (cliente.cnpj_empresa ?? '').replace(/\D/g, '');
+      const cnpjFormatted = this.formatCnpj(cliente.cnpj_empresa).toLowerCase();
+      return (
+        nome.includes(normalized) ||
+        id.includes(normalized) ||
+        (searchDigits.length > 0 && cnpjDigits.includes(searchDigits)) ||
+        cnpjFormatted.includes(normalized)
+      );
+    });
+  }
+
+  protected formatCnpj(value: string | null | undefined): string {
+    if (!value) {
+      return '';
+    }
+    const digits = value.replace(/\D/g, '');
+    if (digits.length !== 14) {
+      return value;
+    }
+    return digits.replace(
+      /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
+      '$1.$2.$3/$4-$5'
+    );
   }
 
   protected async delete(agendamento: Agendamento): Promise<void> {

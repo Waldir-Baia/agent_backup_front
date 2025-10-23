@@ -13,7 +13,7 @@
   flex-wrap: wrap;
   gap: 1.5rem;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
 }
 
 .page-header h2 {
@@ -27,8 +27,64 @@
   color: rgba(29, 29, 29, 0.7);
 }
 
-.client-filter {
-  min-width: 240px;
+.client-selector {
+  width: 100%;
+}
+
+.client-selector-card {
+  width: 100%;
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.75rem 2rem;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(18, 127, 11, 0.04) 100%);
+  border: 1px solid rgba(18, 127, 11, 0.12);
+  box-shadow: 0 24px 45px -28px rgba(18, 127, 11, 0.35);
+}
+
+.client-selector-card__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.client-selector-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: rgba(18, 127, 11, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #127f0b;
+}
+
+.client-selector-card__icon mat-icon {
+  font-size: 28px;
+}
+
+.client-selector-card__copy h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.client-selector-card__copy p {
+  margin: 0.15rem 0 0;
+  color: rgba(29, 29, 29, 0.6);
+}
+
+.client-selector-field {
+  width: 100%;
+}
+
+.client-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 400;
+  color: #1d1d1d;
 }
 
 .logs-card {
@@ -77,5 +133,16 @@ th.mat-header-cell {
 
 ::ng-deep .mat-mdc-paginator .mat-mdc-form-field-infix {
   color: #127f0b;
+}
+
+@media (max-width: 960px) {
+  .client-selector-card {
+    padding: 1.5rem;
+  }
+
+  .client-selector-card__icon {
+    width: 40px;
+    height: 40px;
+  }
 }
 

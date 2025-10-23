@@ -4,20 +4,56 @@
       <h2>Logs de backup</h2>
       <p>Acompanhe os arquivos enviados pelos agentes.</p>
     </div>
-
-    <mat-form-field appearance="outline" class="client-filter">
-      <mat-label>Cliente</mat-label>
-      <mat-select
-        [value]="selectedClientId()"
-        (valueChange)="onClientChange($event)"
-        placeholder="Selecione um cliente"
-      >
-        <mat-option *ngFor="let cliente of clientes()" [value]="cliente.client_id">
-          {{ cliente.nome_empresa }} ({{ cliente.client_id }})
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
   </div>
+
+  <section class="client-selector">
+    <mat-card class="client-selector-card">
+      <div class="client-selector-card__header">
+        <div class="client-selector-card__icon">
+          <mat-icon>groups</mat-icon>
+        </div>
+        <div class="client-selector-card__copy">
+          <h3>Selecionar cliente</h3>
+          <p>Busque pelo nome ou CNPJ para visualizar os logs de envio.</p>
+        </div>
+      </div>
+
+      <mat-form-field appearance="fill" class="client-selector-field">
+        <mat-label>Cliente</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          [formControl]="clientFilterControl"
+          [matAutocomplete]="clienteAutocomplete"
+          placeholder="Digite para buscar..."
+          autocomplete="off"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          aria-label="Limpar seleção"
+          *ngIf="selectedClientId() || clientFilterControl.value"
+          (click)="clearClientSelection()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-autocomplete
+          #clienteAutocomplete="matAutocomplete"
+          [displayWith]="clientDisplayWith"
+          (optionSelected)="onClientSelected($event.option.value)"
+        >
+          <mat-option
+            *ngFor="let cliente of filteredClientes()"
+            [value]="cliente.client_id"
+            class="client-option"
+          >
+            {{ cliente.nome_empresa }} - {{ formatCnpj(cliente.cnpj_empresa) }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </mat-card>
+  </section>
 
   <mat-card class="logs-card">
     <mat-card-content>

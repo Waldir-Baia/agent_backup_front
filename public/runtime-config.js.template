@@ -1,0 +1,4 @@
+window.__env = window.__env || {};
+window.__env.supabaseUrl = '${SUPABASE_URL}';
+window.__env.supabaseAnonKey = '${SUPABASE_ANON_KEY}';
+

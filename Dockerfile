@@ -10,5 +10,7 @@ RUN npm run build
 FROM nginx:1.27-alpine
 COPY --from=build /app/dist/agent-backup-front/browser /usr/share/nginx/html
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/entrypoint/40-runtime-env.sh /docker-entrypoint.d/40-runtime-env.sh
+RUN chmod +x /docker-entrypoint.d/40-runtime-env.sh
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

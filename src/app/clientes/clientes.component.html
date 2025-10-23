@@ -4,17 +4,65 @@
       <h2>Clientes</h2>
       <p>Gerencie as empresas que utilizam o agente de backup.</p>
     </div>
-    <button mat-flat-button color="primary" (click)="startCreate()">Adicionar novo</button>
+    <button mat-flat-button color="primary" (click)="showCreateForm()">Adicionar novo</button>
   </div>
 
-  <div class="page-content">
-    <mat-card class="cliente-form-card">
-      <mat-card-header>
-        <mat-card-title>
-          {{ formMode() === 'create' ? 'Cadastrar cliente' : 'Editar cliente' }}
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
+  <section class="clientes-table">
+    <div class="table-wrapper" *ngIf="!loading(); else loadingState">
+      <table mat-table [dataSource]="clientes()" class="mat-elevation-z1">
+        <ng-container matColumnDef="client_id">
+          <th mat-header-cell *matHeaderCellDef>Client ID</th>
+          <td mat-cell *matCellDef="let cliente">{{ cliente.client_id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nome_empresa">
+          <th mat-header-cell *matHeaderCellDef>Empresa</th>
+          <td mat-cell *matCellDef="let cliente">{{ cliente.nome_empresa }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="cnpj_empresa">
+          <th mat-header-cell *matHeaderCellDef>CNPJ</th>
+          <td mat-cell *matCellDef="let cliente">{{ cliente.cnpj_empresa }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let cliente">
+            <button mat-icon-button aria-label="Editar" (click)="startEdit(cliente)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button aria-label="Excluir" color="warn" (click)="delete(cliente)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+      <p class="empty-state" *ngIf="clientes().length === 0">
+        Nenhum cliente cadastrado até o momento.
+      </p>
+    </div>
+
+    <ng-template #loadingState>
+      <div class="loading-state">
+        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+        <span>Carregando clientes...</span>
+      </div>
+    </ng-template>
+  </section>
+
+  @if (isFormVisible()) {
+    <div class="overlay">
+      <mat-card class="cliente-form-card">
+        <div class="overlay-header">
+          <h3>{{ formMode() === 'create' ? 'Cadastrar cliente' : 'Editar cliente' }}</h3>
+          <button mat-icon-button type="button" aria-label="Fechar" (click)="closeForm()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
         <form [formGroup]="clienteForm" (ngSubmit)="submit()" class="cliente-form">
           <mat-form-field appearance="outline">
             <mat-label>Client ID</mat-label>
@@ -50,59 +98,13 @@
           </mat-form-field>
 
           <div class="form-actions">
-            <button mat-stroked-button type="button" (click)="startCreate()">Cancelar</button>
+            <button mat-stroked-button type="button" (click)="closeForm()">Cancelar</button>
             <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
               {{ formMode() === 'create' ? 'Cadastrar' : 'Salvar alterações' }}
             </button>
           </div>
         </form>
-      </mat-card-content>
-    </mat-card>
-
-    <section class="clientes-table">
-      <div class="table-wrapper" *ngIf="!loading(); else loadingState">
-        <table mat-table [dataSource]="clientes()" class="mat-elevation-z1">
-          <ng-container matColumnDef="client_id">
-            <th mat-header-cell *matHeaderCellDef>Client ID</th>
-            <td mat-cell *matCellDef="let cliente">{{ cliente.client_id }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="nome_empresa">
-            <th mat-header-cell *matHeaderCellDef>Empresa</th>
-            <td mat-cell *matCellDef="let cliente">{{ cliente.nome_empresa }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="cnpj_empresa">
-            <th mat-header-cell *matHeaderCellDef>CNPJ</th>
-            <td mat-cell *matCellDef="let cliente">{{ cliente.cnpj_empresa }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let cliente">
-              <button mat-icon-button aria-label="Editar" (click)="startEdit(cliente)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button aria-label="Excluir" color="warn" (click)="delete(cliente)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-        <p class="empty-state" *ngIf="clientes().length === 0">
-          Nenhum cliente cadastrado até o momento.
-        </p>
-      </div>
-
-      <ng-template #loadingState>
-        <div class="loading-state">
-          <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
-          <span>Carregando clientes...</span>
-        </div>
-      </ng-template>
-    </section>
-  </div>
+      </mat-card>
+    </div>
+  }
 </section>

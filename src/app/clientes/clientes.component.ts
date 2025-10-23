@@ -42,6 +42,7 @@ export class ClientesComponent {
   protected readonly saving = signal(false);
   protected readonly formMode = signal<FormMode>('create');
   protected readonly editingCliente = signal<Cliente | null>(null);
+  protected readonly isFormVisible = signal(false);
 
   protected readonly clienteForm = this.formBuilder.nonNullable.group({
     client_id: ['', Validators.required],
@@ -79,9 +80,11 @@ export class ClientesComponent {
     }
   }
 
-  protected startCreate(): void {
+  protected showCreateForm(): void {
     this.formMode.set('create');
+    this.editingCliente.set(null);
     this.clienteForm.reset();
+    this.isFormVisible.set(true);
   }
 
   protected startEdit(cliente: Cliente): void {
@@ -92,6 +95,14 @@ export class ClientesComponent {
       nome_empresa: cliente.nome_empresa,
       cnpj_empresa: cliente.cnpj_empresa
     });
+    this.isFormVisible.set(true);
+  }
+
+  protected closeForm(): void {
+    this.isFormVisible.set(false);
+    this.clienteForm.reset();
+    this.editingCliente.set(null);
+    this.formMode.set('create');
   }
 
   protected formatCnpjInput(event: Event): void {
@@ -145,7 +156,7 @@ export class ClientesComponent {
         const created = await this.supabaseService.createCliente(payload);
         this.clientes.set([created, ...this.clientes()]);
         this.snackBar.open('Cliente cadastrado com sucesso.', 'Fechar', { duration: 4000 });
-      } else if (this.formMode() === 'edit') {
+      } else {
         const editing = this.editingCliente();
         if (!editing) {
           throw new Error('Cliente para edição não encontrado.');
@@ -162,8 +173,7 @@ export class ClientesComponent {
         this.snackBar.open('Cliente atualizado com sucesso.', 'Fechar', { duration: 4000 });
       }
 
-      this.startCreate();
-      this.clienteForm.reset();
+      this.closeForm();
     } catch (error) {
       console.error('Erro ao salvar cliente', error);
       this.snackBar.open('Não foi possível salvar o cliente.', 'Fechar', { duration: 4000 });

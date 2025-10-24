@@ -73,6 +73,7 @@ export class LogsComponent {
     'file_name',
     'file_size_bytes',
     'file_creation_date',
+    'error_message',
     'created_at'
   ];
 

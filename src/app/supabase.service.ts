@@ -125,6 +125,7 @@ type Database = {
           file_name: string;
           file_size_bytes: number;
           file_creation_date: string;
+          error_message: string | null;
           created_at: string;
         };
         Insert: {
@@ -133,6 +134,7 @@ type Database = {
           file_name: string;
           file_size_bytes: number;
           file_creation_date: string;
+          error_message?: string | null;
           created_at?: string;
         };
         Update: Partial<Omit<Database['public']['Tables']['backup_logs']['Row'], 'id'>>;

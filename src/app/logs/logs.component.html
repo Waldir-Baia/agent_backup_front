@@ -89,6 +89,13 @@
               </td>
             </ng-container>
 
+            <ng-container matColumnDef="error_message">
+              <th mat-header-cell *matHeaderCellDef>Erro</th>
+              <td mat-cell *matCellDef="let log" [class.has-error]="log.error_message">
+                {{ log.error_message || '—' }}
+              </td>
+            </ng-container>
+
             <ng-container matColumnDef="created_at">
               <th mat-header-cell *matHeaderCellDef>Registrado em</th>
               <td mat-cell *matCellDef="let log">

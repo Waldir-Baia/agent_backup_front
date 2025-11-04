@@ -2,7 +2,7 @@
 
 <mat-dialog-content>
   <p class="dialog-subtitle">
-    O comando selecionado sera enviado para execucao imediata no agente escolhido.
+    O comando selecionado será enviado para execução imediata no agente escolhido.
   </p>
 
   <form [formGroup]="form" class="execute-form">
@@ -28,7 +28,7 @@
         [readonly]="submitting()"
       />
       <mat-error *ngIf="form.controls.nome_tarefa.hasError('required')">
-        Informe uma descricao para rastreio.
+        Informe uma descrição para rastreio.
       </mat-error>
     </mat-form-field>
 

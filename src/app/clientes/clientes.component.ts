@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { Cliente, ClienteInsert, ClienteUpdate, SupabaseService } from '../supabase.service';
@@ -26,7 +27,8 @@ type FormMode = 'create' | 'edit';
     MatIconModule,
     MatCardModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatSlideToggleModule
   ],
   templateUrl: './clientes.component.html',
   styleUrl: './clientes.component.css'
@@ -36,7 +38,7 @@ export class ClientesComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly snackBar = inject(MatSnackBar);
 
-  protected readonly displayedColumns = ['client_id', 'nome_empresa', 'cnpj_empresa', 'actions'];
+  protected readonly displayedColumns = ['client_id', 'nome_empresa', 'cnpj_empresa', 'ativo', 'actions'];
   protected readonly clientes = signal<Cliente[]>([]);
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
@@ -53,7 +55,8 @@ export class ClientesComponent {
         Validators.required,
         Validators.pattern(/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/)
       ]
-    ]
+    ],
+    ativo: [true]
   });
 
   constructor() {
@@ -83,7 +86,12 @@ export class ClientesComponent {
   protected showCreateForm(): void {
     this.formMode.set('create');
     this.editingCliente.set(null);
-    this.clienteForm.reset();
+    this.clienteForm.reset({
+      client_id: '',
+      nome_empresa: '',
+      cnpj_empresa: '',
+      ativo: true
+    });
     this.isFormVisible.set(true);
   }
 
@@ -93,14 +101,20 @@ export class ClientesComponent {
     this.clienteForm.setValue({
       client_id: cliente.client_id,
       nome_empresa: cliente.nome_empresa,
-      cnpj_empresa: cliente.cnpj_empresa
+      cnpj_empresa: cliente.cnpj_empresa,
+      ativo: cliente.ativo
     });
     this.isFormVisible.set(true);
   }
 
   protected closeForm(): void {
     this.isFormVisible.set(false);
-    this.clienteForm.reset();
+    this.clienteForm.reset({
+      client_id: '',
+      nome_empresa: '',
+      cnpj_empresa: '',
+      ativo: true
+    });
     this.editingCliente.set(null);
     this.formMode.set('create');
   }
@@ -151,7 +165,8 @@ export class ClientesComponent {
         const payload: ClienteInsert = {
           client_id: formValue.client_id.trim(),
           nome_empresa: formValue.nome_empresa.trim(),
-          cnpj_empresa: formValue.cnpj_empresa
+          cnpj_empresa: formValue.cnpj_empresa,
+          ativo: formValue.ativo
         };
         const created = await this.supabaseService.createCliente(payload);
         this.clientes.set([created, ...this.clientes()]);
@@ -164,7 +179,8 @@ export class ClientesComponent {
         const payload: ClienteUpdate = {
           client_id: formValue.client_id.trim(),
           nome_empresa: formValue.nome_empresa.trim(),
-          cnpj_empresa: formValue.cnpj_empresa
+          cnpj_empresa: formValue.cnpj_empresa,
+          ativo: formValue.ativo
         };
         const updated = await this.supabaseService.updateCliente(editing.id, payload);
         this.clientes.set(

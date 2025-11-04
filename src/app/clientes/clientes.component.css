@@ -70,6 +70,28 @@ button[mat-icon-button][color='warn'] mat-icon {
   color: #d32f2f;
 }
 
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background-color: rgba(18, 127, 11, 0.12);
+  color: #127f0b;
+}
+
+.status-pill--inactive {
+  background-color: rgba(211, 47, 47, 0.12);
+  color: #d32f2f;
+}
+
+.cliente-form mat-slide-toggle {
+  margin-top: 0.5rem;
+}
+
 .overlay {
   position: fixed;
   top: 0;

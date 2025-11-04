@@ -93,8 +93,8 @@ export class PlaybookExecuteDialogComponent implements OnInit {
       await this.supabaseService.inserirExecucao(payload);
       this.dialogRef.close(true);
     } catch (error) {
-      console.error('Erro ao enviar execucao do playbook', error);
-      this.snackBar.open('Nao foi possivel enviar o comando.', 'Fechar', { duration: 4000 });
+      console.error('Erro ao enviar execução do playbook', error);
+      this.snackBar.open('Não foi possível enviar o comando.', 'Fechar', { duration: 4000 });
     } finally {
       this.submitting.set(false);
     }
@@ -114,8 +114,8 @@ export class PlaybookExecuteDialogComponent implements OnInit {
         this.form.controls.client_id.setValue(data[0].client_id, { emitEvent: false });
       }
     } catch (error) {
-      console.error('Erro ao carregar clientes para execucao', error);
-      this.snackBar.open('Nao foi possivel carregar a lista de clientes.', 'Fechar', {
+      console.error('Erro ao carregar clientes para execução', error);
+      this.snackBar.open('Não foi possível carregar a lista de clientes.', 'Fechar', {
         duration: 4000
       });
     } finally {

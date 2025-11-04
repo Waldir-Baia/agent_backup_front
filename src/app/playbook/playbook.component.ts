@@ -85,7 +85,7 @@ export class PlaybookComponent implements OnInit {
       this.comandos.set(data);
     } catch (error) {
       console.error('Erro ao carregar comandos do playbook', error);
-      this.snackBar.open('Nao foi possivel carregar a lista de comandos.', 'Fechar', {
+      this.snackBar.open('Não foi possível carregar a lista de comandos.', 'Fechar', {
         duration: 4000
       });
     } finally {
@@ -126,7 +126,7 @@ export class PlaybookComponent implements OnInit {
 
   protected async delete(command: PlaybookCommand): Promise<void> {
     const confirmed = window.confirm(
-      `Remover "${command.titulo}" da lista? Essa acao nao pode ser desfeita.`
+      `Remover "${command.titulo}" da lista? Essa ação não pode ser desfeita.`
     );
 
     if (!confirmed) {
@@ -139,7 +139,7 @@ export class PlaybookComponent implements OnInit {
       this.snackBar.open('Comando removido do playbook.', 'Fechar', { duration: 4000 });
     } catch (error) {
       console.error('Erro ao deletar comando do playbook', error);
-      this.snackBar.open('Nao foi possivel excluir o comando.', 'Fechar', { duration: 4000 });
+      this.snackBar.open('Não foi possível excluir o comando.', 'Fechar', { duration: 4000 });
     }
   }
 
@@ -154,7 +154,7 @@ export class PlaybookComponent implements OnInit {
         return;
       }
 
-      this.snackBar.open('Comando enviado para execucao.', 'Fechar', { duration: 4000 });
+      this.snackBar.open('Comando enviado para execução.', 'Fechar', { duration: 4000 });
     });
   }
 }

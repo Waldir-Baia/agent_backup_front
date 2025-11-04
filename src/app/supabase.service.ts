@@ -24,19 +24,21 @@ type Database = {
         Relationships: never[];
       };
       clientes: {
-        Row: {
-          id: number;
-          client_id: string;
-          nome_empresa: string;
-          cnpj_empresa: string;
-          created_at: string;
+       Row: {
+         id: number;
+         client_id: string;
+         nome_empresa: string;
+         cnpj_empresa: string;
+         ativo: boolean;
+         created_at: string;
         };
         Insert: {
-          id?: number;
-          client_id: string;
-          nome_empresa: string;
-          cnpj_empresa: string;
-          created_at?: string;
+         id?: number;
+         client_id: string;
+         nome_empresa: string;
+         cnpj_empresa: string;
+         ativo?: boolean;
+         created_at?: string;
         };
         Update: Partial<Omit<Database['public']['Tables']['clientes']['Row'], 'id'>>;
         Relationships: [

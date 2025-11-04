@@ -17,6 +17,10 @@ import {
   PlaybookDialogResult,
   PlaybookFormDialogComponent
 } from './playbook-form-dialog.component';
+import {
+  PlaybookExecuteDialogComponent,
+  PlaybookExecuteDialogResult
+} from './playbook-execute-dialog.component';
 
 @Component({
   selector: 'app-playbook',
@@ -137,5 +141,20 @@ export class PlaybookComponent implements OnInit {
       console.error('Erro ao deletar comando do playbook', error);
       this.snackBar.open('Nao foi possivel excluir o comando.', 'Fechar', { duration: 4000 });
     }
+  }
+
+  protected executeCommand(command: PlaybookCommand): void {
+    const dialogRef = this.dialog.open(PlaybookExecuteDialogComponent, {
+      width: '560px',
+      data: { command }
+    });
+
+    dialogRef.afterClosed().subscribe((result?: PlaybookExecuteDialogResult) => {
+      if (!result) {
+        return;
+      }
+
+      this.snackBar.open('Comando enviado para execucao.', 'Fechar', { duration: 4000 });
+    });
   }
 }

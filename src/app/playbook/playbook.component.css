@@ -105,8 +105,8 @@
 }
 
 .command-preview {
-  background: transparent;
-  color: inherit;
+  background: #0f172a;
+  color: #f8fafc;
   padding: 0.75rem;
   border-radius: 0.5rem;
   font-size: 0.85rem;

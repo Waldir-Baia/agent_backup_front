@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>Executar comando</h2>
+
+<mat-dialog-content>
+  <p class="dialog-subtitle">
+    O comando selecionado sera enviado para execucao imediata no agente escolhido.
+  </p>
+
+  <form [formGroup]="form" class="execute-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Cliente</mat-label>
+      <mat-select formControlName="client_id" [disabled]="loadingClientes() || submitting()">
+        <mat-option value="" disabled>Selecione um cliente</mat-option>
+        <mat-option *ngFor="let cliente of clientes()" [value]="cliente.client_id">
+          {{ cliente.nome_empresa }} ({{ cliente.client_id }})
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.controls.client_id.hasError('required')">
+        Selecione o cliente.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nome da tarefa</mat-label>
+      <input
+        matInput
+        formControlName="nome_tarefa"
+        placeholder="Descreva a execucao"
+        [readonly]="submitting()"
+      />
+      <mat-error *ngIf="form.controls.nome_tarefa.hasError('required')">
+        Informe uma descricao para rastreio.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="command-preview">
+      <mat-label>Comando</mat-label>
+      <textarea matInput [value]="data.command.comando" rows="6" readonly></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="cancel()" [disabled]="submitting()">Cancelar</button>
+  <button
+    mat-flat-button
+    color="primary"
+    type="button"
+    (click)="submit()"
+    [disabled]="loadingClientes() || submitting()"
+  >
+    <mat-progress-spinner
+      *ngIf="submitting()"
+      mode="indeterminate"
+      diameter="18"
+    ></mat-progress-spinner>
+    Executar
+  </button>
+</mat-dialog-actions>

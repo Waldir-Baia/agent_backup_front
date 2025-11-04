@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+.dialog-subtitle {
+  margin: 0 0 1rem;
+  color: #6b7280;
+}
+
+.playbook-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.command-field textarea {
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+}
+
+mat-dialog-actions button + button {
+  margin-left: 0.5rem;
+}
+
+mat-progress-spinner {
+  margin-right: 0.5rem;
+}
+

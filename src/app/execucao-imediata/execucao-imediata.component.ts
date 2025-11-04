@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelectModule, MatSelectChange } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -59,14 +59,6 @@ export class ExecucaoImediataComponent {
 
   constructor() {
     this.loadClientes();
-    effect(() => {
-      const clientId = this.execucaoForm.controls.client_id.value;
-      if (clientId) {
-        this.loadHistorico(clientId);
-      } else {
-        this.historico.set([]);
-      }
-    });
   }
 
   protected async loadClientes(): Promise<void> {
@@ -74,9 +66,20 @@ export class ExecucaoImediataComponent {
     try {
       const data = await this.supabaseService.listClientes();
       this.clientes.set(data);
+
+      const currentClient = this.execucaoForm.controls.client_id.value;
+      if (!currentClient && data.length > 0) {
+        const firstClient = data[0].client_id;
+        this.execucaoForm.controls.client_id.setValue(firstClient, { emitEvent: false });
+        await this.loadHistorico(firstClient);
+      } else if (currentClient) {
+        await this.loadHistorico(currentClient);
+      } else {
+        this.historico.set([]);
+      }
     } catch (error) {
       console.error('Erro ao carregar clientes', error);
-      this.snackBar.open('Não foi possível carregar os clientes.', 'Fechar', {
+      this.snackBar.open('Nao foi possivel carregar os clientes.', 'Fechar', {
         duration: 4000
       });
     } finally {
@@ -90,8 +93,8 @@ export class ExecucaoImediataComponent {
       const data = await this.supabaseService.listExecucoesRecentes(clientId, 20);
       this.historico.set(data);
     } catch (error) {
-      console.error('Erro ao carregar histórico', error);
-      this.snackBar.open('Não foi possível carregar o histórico.', 'Fechar', {
+      console.error('Erro ao carregar historico', error);
+      this.snackBar.open('Nao foi possivel carregar o historico.', 'Fechar', {
         duration: 4000
       });
     } finally {
@@ -115,7 +118,7 @@ export class ExecucaoImediataComponent {
     this.submitting.set(true);
     try {
       await this.supabaseService.inserirExecucao(payload);
-      this.snackBar.open('Comando enviado para execução.', 'Fechar', {
+      this.snackBar.open('Comando enviado para execucao.', 'Fechar', {
         duration: 4000
       });
       this.execucaoForm.controls.nome_tarefa.reset('');
@@ -123,12 +126,22 @@ export class ExecucaoImediataComponent {
       await this.loadHistorico(client_id);
     } catch (error) {
       console.error('Erro ao enviar comando', error);
-      this.snackBar.open('Não foi possível enviar o comando.', 'Fechar', {
+      this.snackBar.open('Nao foi possivel enviar o comando.', 'Fechar', {
         duration: 4000
       });
     } finally {
       this.submitting.set(false);
     }
   }
-}
 
+  protected async handleClientSelection(event: MatSelectChange): Promise<void> {
+    const clientId = event.value;
+    this.execucaoForm.controls.client_id.setValue(clientId, { emitEvent: false });
+
+    if (clientId) {
+      await this.loadHistorico(clientId);
+    } else {
+      this.historico.set([]);
+    }
+  }
+}

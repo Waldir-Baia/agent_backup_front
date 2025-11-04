@@ -34,6 +34,11 @@ export const routes: Routes = [
           )
       },
       {
+        path: 'playbook',
+        loadComponent: () =>
+          import('./playbook/playbook.component').then((m) => m.PlaybookComponent)
+      },
+      {
         path: 'logs',
         loadComponent: () =>
           import('./logs/logs.component').then((m) => m.LogsComponent)

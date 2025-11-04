@@ -1,0 +1,111 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.playbook-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.playbook-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.playbook-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: #6b7280;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.playbook-search {
+  width: 320px;
+  max-width: 100%;
+}
+
+.playbook-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.table-card {
+  width: 100%;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.75rem 0 1rem;
+  gap: 1rem;
+  padding-inline: 0.5rem;
+}
+
+.table-title {
+  margin: 0.5rem 0 0 1rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.playbook-table {
+  width: 100%;
+}
+
+.cell-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cell-meta {
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+.command-preview {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  max-height: 120px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.actions-column {
+  text-align: right;
+  width: 96px;
+}
+
+.playbook-row button + button {
+  margin-left: 0.25rem;
+}
+
+.state-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem 1rem;
+  color: #6b7280;
+}

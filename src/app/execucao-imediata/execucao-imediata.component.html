@@ -15,7 +15,11 @@
         <form [formGroup]="execucaoForm" (ngSubmit)="submit()" class="execucao-form">
           <mat-form-field appearance="outline">
             <mat-label>Cliente</mat-label>
-            <mat-select formControlName="client_id" placeholder="Selecione um cliente">
+            <mat-select
+              formControlName="client_id"
+              placeholder="Selecione um cliente"
+              (selectionChange)="handleClientSelection($event)"
+            >
               <mat-option *ngFor="let cliente of clientes()" [value]="cliente.client_id">
                 {{ cliente.nome_empresa }} ({{ cliente.client_id }})
               </mat-option>

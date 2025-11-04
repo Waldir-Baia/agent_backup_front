@@ -118,6 +118,26 @@ type Database = {
           }
         ];
       };
+      playbook_comandos: {
+        Row: {
+          id: number;
+          titulo: string;
+          descricao: string | null;
+          comando: string;
+          created_at: string;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          titulo: string;
+          descricao?: string | null;
+          comando: string;
+          created_at?: string;
+          updated_at?: string | null;
+        };
+        Update: Partial<Omit<Database['public']['Tables']['playbook_comandos']['Row'], 'id'>>;
+        Relationships: never[];
+      };
       backup_logs: {
         Row: {
           id: number;
@@ -165,6 +185,9 @@ export type AgendamentoInsert = Database['public']['Tables']['agendamentos']['In
 export type AgendamentoUpdate = Database['public']['Tables']['agendamentos']['Update'];
 export type ExecucaoRealtime = Database['public']['Tables']['execucoes_realtime']['Row'];
 export type ExecucaoRealtimeInsert = Database['public']['Tables']['execucoes_realtime']['Insert'];
+export type PlaybookCommand = Database['public']['Tables']['playbook_comandos']['Row'];
+export type PlaybookCommandInsert = Database['public']['Tables']['playbook_comandos']['Insert'];
+export type PlaybookCommandUpdate = Database['public']['Tables']['playbook_comandos']['Update'];
 export type BackupLog = Database['public']['Tables']['backup_logs']['Row'];
 
 /**
@@ -319,6 +342,67 @@ export class SupabaseService {
 
   async deleteAgendamento(id: number): Promise<void> {
     const { error } = await this.getClient().from('agendamentos').delete().eq('id', id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async listPlaybookCommands(): Promise<PlaybookCommand[]> {
+    const { data, error } = await this.getClient()
+      .from('playbook_comandos')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return (data ?? []) as PlaybookCommand[];
+  }
+
+  async createPlaybookCommand(payload: PlaybookCommandInsert): Promise<PlaybookCommand> {
+    const { data, error } = await this.getClient()
+      .from('playbook_comandos')
+      .insert(payload)
+      .select()
+      .maybeSingle<PlaybookCommand>();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!data) {
+      throw new Error('Erro ao criar comando do playbook.');
+    }
+
+    return data;
+  }
+
+  async updatePlaybookCommand(
+    id: number,
+    payload: PlaybookCommandUpdate
+  ): Promise<PlaybookCommand> {
+    const { data, error } = await this.getClient()
+      .from('playbook_comandos')
+      .update(payload)
+      .eq('id', id)
+      .select()
+      .maybeSingle<PlaybookCommand>();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!data) {
+      throw new Error('Comando do playbook não encontrado para atualização.');
+    }
+
+    return data;
+  }
+
+  async deletePlaybookCommand(id: number): Promise<void> {
+    const { error } = await this.getClient().from('playbook_comandos').delete().eq('id', id);
 
     if (error) {
       throw new Error(error.message);

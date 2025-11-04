@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>{{ title() }}</h2>
+
+<mat-dialog-content>
+  <p class="dialog-subtitle">
+    Defina um nome amigavel e o comando completo que sera reaproveitado.
+  </p>
+
+  <form [formGroup]="playbookForm" (ngSubmit)="submit()" class="playbook-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Titulo</mat-label>
+      <input matInput formControlName="titulo" maxlength="150" />
+      <mat-error *ngIf="playbookForm.controls.titulo.hasError('required')">
+        Informe um titulo para o comando.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Descricao (opcional)</mat-label>
+      <textarea matInput formControlName="descricao" rows="2" maxlength="400"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="command-field">
+      <mat-label>Comando completo</mat-label>
+      <textarea
+        matInput
+        formControlName="comando"
+        rows="4"
+        cdkTextareaAutosize
+      ></textarea>
+      <mat-error *ngIf="playbookForm.controls.comando.hasError('required')">
+        Informe o comando que sera reutilizado.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" (click)="cancel()">Cancelar</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+        <mat-progress-spinner
+          *ngIf="saving()"
+          diameter="18"
+          mode="indeterminate"
+        ></mat-progress-spinner>
+        {{ data.mode === 'create' ? 'Salvar' : 'Atualizar' }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</mat-dialog-content>

@@ -1,0 +1,109 @@
+<section class="playbook-page">
+  <header class="playbook-header">
+    <div>
+      <h1>PlayBook</h1>
+      <p class="subtitle">
+        Salve os comandos mais usados e reutilize-os com apenas um clique.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <mat-form-field class="playbook-search" appearance="outline">
+        <mat-label>Buscar comando</mat-label>
+        <input
+          matInput
+          type="search"
+          placeholder="Filtrar por titulo ou comando"
+          (input)="filterTerm.set($any($event.target).value)"
+        />
+        <button
+          matSuffix
+          mat-icon-button
+          aria-label="Limpar busca"
+          *ngIf="filterTerm()"
+          (click)="filterTerm.set('')"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </header>
+
+  <div class="playbook-layout">
+    <mat-card class="table-card">
+      <header class="table-header">
+        <h2 class="table-title">Comandos cadastrados</h2>
+        <button mat-flat-button color="primary" (click)="openCreateDialog()">
+          <mat-icon>add</mat-icon>
+          Novo comando
+        </button>
+      </header>
+
+      <div class="table-wrapper" *ngIf="!loading(); else loadingState">
+        <table
+          mat-table
+          [dataSource]="filteredCommands()"
+          class="playbook-table"
+          *ngIf="filteredCommands().length > 0; else emptyState"
+        >
+          <ng-container matColumnDef="titulo">
+            <th mat-header-cell *matHeaderCellDef>Titulo</th>
+            <td mat-cell *matCellDef="let command">
+              <div class="cell-title">
+                <strong>{{ command.titulo }}</strong>
+                <span class="cell-meta">{{ command.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="descricao">
+            <th mat-header-cell *matHeaderCellDef>Descricao</th>
+            <td mat-cell *matCellDef="let command">
+              {{ command.descricao || 'Sem descricao' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="comando">
+            <th mat-header-cell *matHeaderCellDef>Comando</th>
+            <td mat-cell *matCellDef="let command">
+              <pre class="command-preview">{{ command.comando }}</pre>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="actions-column">Acoes</th>
+            <td mat-cell *matCellDef="let command" class="actions-column">
+              <button mat-icon-button color="primary" (click)="openEditDialog(command)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="delete(command)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns; trackBy: trackById"
+            class="playbook-row"
+          ></tr>
+        </table>
+      </div>
+    </mat-card>
+  </div>
+</section>
+
+<ng-template #loadingState>
+  <div class="state-wrapper">
+    <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+    <p>Carregando comandos...</p>
+  </div>
+</ng-template>
+
+<ng-template #emptyState>
+  <div class="state-wrapper">
+    <p>Nenhum comando cadastrado ainda.</p>
+    <button mat-flat-button color="primary" (click)="openCreateDialog()">Cadastrar primeiro</button>
+  </div>
+</ng-template>

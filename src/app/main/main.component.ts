@@ -43,6 +43,7 @@ export class MainComponent {
     { icon: 'business', label: 'Clientes', route: 'clientes' },
     { icon: 'event', label: 'Agendamentos', route: 'agendamentos' },
     { icon: 'play_arrow', label: 'Execução imediata', route: 'execucao' },
+    { icon: 'menu_book', label: 'PlayBook', route: 'playbook' },
     { icon: 'description', label: 'Logs de backup', route: 'logs' }
   ];
 

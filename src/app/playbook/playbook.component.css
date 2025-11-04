@@ -23,7 +23,7 @@
 }
 
 .subtitle {
-  margin: 0;
+  margin: 0.5rem 0 0;
   color: #6b7280;
 }
 
@@ -68,6 +68,29 @@
 
 .playbook-table {
   width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.playbook-table th,
+.playbook-table td {
+  padding: 0.75rem 0.75rem;
+  vertical-align: middle;
+}
+
+.playbook-table th.cdk-column-titulo,
+.playbook-table td.cdk-column-titulo {
+  width: 18%;
+}
+
+.playbook-table th.cdk-column-descricao,
+.playbook-table td.cdk-column-descricao {
+  width: 26%;
+}
+
+.playbook-table th.cdk-column-comando,
+.playbook-table td.cdk-column-comando {
+  width: 40%;
 }
 
 .cell-title {
@@ -82,8 +105,8 @@
 }
 
 .command-preview {
-  background: #0f172a;
-  color: #f8fafc;
+  background: transparent;
+  color: inherit;
   padding: 0.75rem;
   border-radius: 0.5rem;
   font-size: 0.85rem;
@@ -93,12 +116,20 @@
 }
 
 .actions-column {
-  text-align: right;
-  width: 96px;
+  width: 110px;
 }
 
-.playbook-row button + button {
-  margin-left: 0.25rem;
+.playbook-table th.actions-column {
+  text-align: right;
+  padding-right: 5.0rem;
+  padding-left: 0.5rem;
+  align-items: center;
+}
+
+.playbook-row td.actions-column {
+  gap: 0.25rem;
+  padding-right: 0;
+  padding-left: 1.8rem;
 }
 
 .state-wrapper {

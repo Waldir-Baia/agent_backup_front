@@ -212,7 +212,13 @@ export class SupabaseService {
         );
       }
 
-      this.client = createClient<Database>(supabaseUrl, supabaseAnonKey);
+      this.client = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false
+        }
+      });
     }
 
     return this.client;

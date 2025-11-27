@@ -2,12 +2,25 @@ import { CommonModule } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { DividerModule } from 'primeng/divider';
+import { MessageModule } from 'primeng/message';
 import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    CardModule,
+    InputTextModule,
+    ButtonModule,
+    DividerModule,
+    MessageModule
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -23,6 +36,7 @@ export class LoginComponent {
   });
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal('');
+  protected readonly showPassword = signal(false);
 
   constructor() {
     effect(() => {
@@ -30,6 +44,10 @@ export class LoginComponent {
         this.router.navigateByUrl('/principal');
       }
     });
+  }
+
+  protected togglePassword(): void {
+    this.showPassword.update((value) => !value);
   }
 
   protected async onSubmit(): Promise<void> {

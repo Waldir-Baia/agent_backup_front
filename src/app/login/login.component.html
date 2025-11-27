@@ -10,48 +10,72 @@
       </header>
 
       <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-        <label class="form-field">
-          <span>Email</span>
-          <input
-            type="email"
-            inputmode="email"
-            formControlName="email"
-            placeholder="email@empresa.com"
-            autocomplete="username"
-          />
-          @if (loginForm.controls.email.invalid && loginForm.controls.email.touched) {
-            <small class="form-field__feedback">Informe um e-mail válido.</small>
-          }
-        </label>
+        <div class="form-field input-wrapper">
+          <label for="email">Email</label>
+          <div class="input-with-icon">
+            <input
+              pInputText
+              id="email"
+              type="email"
+              inputmode="email"
+              formControlName="email"
+              placeholder="email@empresa.com"
+              autocomplete="username"
+            />
+          </div>
+          <div
+            *ngIf="loginForm.controls.email.invalid && loginForm.controls.email.touched"
+            class="field-error"
+          >
+            <i class="pi pi-exclamation-triangle"></i>
+            <span>Informe um e-mail válido.</span>
+          </div>
+        </div>
 
-        <label class="form-field">
-          <span>Senha</span>
-          <input
-            type="password"
-            formControlName="password"
-            placeholder="Digite sua senha"
-            autocomplete="current-password"
-          />
-          @if (loginForm.controls.password.invalid && loginForm.controls.password.touched) {
-            <small class="form-field__feedback">Informe sua senha.</small>
-          }
-        </label>
+        <div class="form-field input-wrapper">
+          <label for="password">Senha</label>
+          <div class="input-with-icon">
+            <input
+              pInputText
+              [type]="showPassword() ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              pButton
+              class="eye-button"
+              [icon]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'"
+              (click)="togglePassword()"
+              [text]="true"
+            ></button>
+          </div>
+          <div
+            *ngIf="loginForm.controls.password.invalid && loginForm.controls.password.touched"
+            class="field-error"
+          >
+            <i class="pi pi-exclamation-triangle"></i>
+            <span>Informe sua senha.</span>
+          </div>
+        </div>
 
-        @if (errorMessage()) {
-          <p class="login-form__error">{{ errorMessage() }}</p>
-        }
+        <div *ngIf="errorMessage()" class="login-error">
+          <i class="pi pi-exclamation-triangle"></i>
+          <span>{{ errorMessage() }}</span>
+        </div>
 
         <button
+          pButton
           type="submit"
-          class="login-form__submit"
-          [style.background]="brandColor"
           [disabled]="submitting()"
+          class="login-form__submit"
         >
           @if (submitting()) {
-            Autenticando...
-          } @else {
-            Entrar
+            <i class="pi pi-spin pi-spinner"></i>
           }
+          <span>Entrar</span>
         </button>
       </form>
     </div>

@@ -12,7 +12,7 @@
   justify-content: center;
   min-height: 100vh;
   padding: 2rem 1.5rem;
-  background: #ffffff;
+  background: linear-gradient(135deg, #f5fff4 0%, #f1f6ff 100%);
 }
 
 .login-card {
@@ -71,10 +71,16 @@
   color: rgba(29, 29, 29, 0.8);
 }
 
-.form-field input {
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+::ng-deep .p-inputtext {
   width: 100%;
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.16);
   padding: 0.85rem 1rem;
   font-size: 1rem;
   font-family: inherit;
@@ -82,47 +88,47 @@
   background-color: rgba(255, 255, 255, 0.95);
 }
 
-.form-field input:focus {
+::ng-deep .p-inputtext:focus {
   outline: none;
-  border-color: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+  border-color: #127f0b;
+  box-shadow: 0 0 0 3px rgba(18, 127, 11, 0.18);
 }
 
-.form-field input.ng-invalid.ng-touched {
-  border-color: #ff5252;
-  box-shadow: 0 0 0 4px rgba(255, 82, 82, 0.15);
+.eye-button {
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: rgba(29, 29, 29, 0.6);
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
 }
 
-.form-field__feedback {
-  color: #ff5252;
-  font-size: 0.8rem;
-}
-
-.login-form__error {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #ff5252;
+::ng-deep .eye-button.p-button {
+  background: transparent;
+  border: none;
+  min-width: 2.25rem;
 }
 
 .login-form__submit {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  border-radius: 999px;
+  width: 100%;
+  border-radius: 12px;
   padding: 0.95rem 1rem;
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 700;
+  background: linear-gradient(135deg, #127f0b, #0f6b0a);
+  border: none;
   color: #ffffff;
-  background: #127f0b;
-  cursor: pointer;
-  transition: filter 0.2s ease, transform 0.2s ease;
-}
-
-.login-form__submit:disabled {
-  cursor: wait;
-  filter: brightness(0.9);
+  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.5);
+  transition: transform 0.15s ease, filter 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .login-form__submit:hover:not(:disabled) {
@@ -130,9 +136,48 @@
   transform: translateY(-1px);
 }
 
-.login-form__submit:active:not(:disabled) {
-  transform: translateY(0);
-  filter: brightness(0.98);
+.login-form__submit:disabled {
+  filter: brightness(0.9);
+  cursor: wait;
+}
+
+::ng-deep .p-message {
+  margin: 0;
+}
+
+.login-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.08);
+  border: 1px solid rgba(211, 47, 47, 0.35);
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  font-weight: 600;
+  animation: shake 0.3s ease;
+}
+
+.field-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.06);
+  border: 1px solid rgba(211, 47, 47, 0.25);
+  padding: 0.5rem 0.6rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
 }
 
 @media (max-width: 480px) {

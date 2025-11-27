@@ -8,7 +8,11 @@
   <form [formGroup]="form" class="execute-form">
     <mat-form-field appearance="outline">
       <mat-label>Cliente</mat-label>
-      <mat-select formControlName="client_id" [disabled]="loadingClientes() || submitting()">
+      <mat-select
+        formControlName="client_id"
+        [disabled]="loadingClientes() || submitting()"
+        (selectionChange)="handleClientSelection($event)"
+      >
         <mat-option value="" disabled>Selecione um cliente</mat-option>
         <mat-option *ngFor="let cliente of clientes()" [value]="cliente.client_id">
           {{ cliente.nome_empresa }} ({{ cliente.client_id }})
@@ -16,6 +20,25 @@
       </mat-select>
       <mat-error *ngIf="form.controls.client_id.hasError('required')">
         Selecione o cliente.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Servidor</mat-label>
+      <mat-select
+        formControlName="servidor_ip"
+        [disabled]="loadingServidores() || servidores().length === 0 || submitting()"
+      >
+        <mat-option *ngIf="loadingServidores()" disabled>Carregando servidores...</mat-option>
+        <mat-option *ngIf="!loadingServidores() && servidores().length === 0" disabled>
+          Nenhum servidor cadastrado para este cliente.
+        </mat-option>
+        <mat-option *ngFor="let servidor of servidores()" [value]="servidor.endereco_ip">
+          {{ servidor.nome }} ({{ servidor.endereco_ip }})
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.controls.servidor_ip.hasError('required')">
+        Selecione o servidor.
       </mat-error>
     </mat-form-field>
 
@@ -46,7 +69,7 @@
     color="primary"
     type="button"
     (click)="submit()"
-    [disabled]="loadingClientes() || submitting()"
+    [disabled]="loadingClientes() || loadingServidores() || submitting()"
   >
     <mat-progress-spinner
       *ngIf="submitting()"

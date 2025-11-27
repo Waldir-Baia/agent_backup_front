@@ -18,7 +18,7 @@ export class LoginComponent {
 
   protected readonly brandColor = '#127f0b';
   protected readonly loginForm = this.formBuilder.nonNullable.group({
-    username: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required]
   });
   protected readonly submitting = signal(false);
@@ -38,13 +38,13 @@ export class LoginComponent {
       return;
     }
 
-    const { username, password } = this.loginForm.getRawValue();
+    const { email, password } = this.loginForm.getRawValue();
 
     this.submitting.set(true);
     this.errorMessage.set('');
 
     try {
-      await this.authService.login(username, password);
+      await this.authService.login(email, password);
     } catch (error) {
       console.error('Erro ao autenticar usuário', error);
       this.errorMessage.set('Usuário ou senha inválidos.');
@@ -53,4 +53,3 @@ export class LoginComponent {
     }
   }
 }
-

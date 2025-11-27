@@ -49,8 +49,11 @@ export class MainComponent {
   ];
 
   protected async signOut(): Promise<void> {
-    this.authService.logout();
-    await this.router.navigateByUrl('/');
+    try {
+      await this.authService.logout();
+    } finally {
+      await this.router.navigateByUrl('/');
+    }
   }
 
   protected toggleSidenav(): void {

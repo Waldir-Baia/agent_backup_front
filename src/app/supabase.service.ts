@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { SupabaseClient, createClient, type Session, type User } from '@supabase/supabase-js';
 import { environment } from '../environments/environment';
 
 type Database = {
@@ -254,9 +254,9 @@ export class SupabaseService {
 
       this.client = createClient<Database>(supabaseUrl, supabaseAnonKey, {
         auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-          detectSessionInUrl: false
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
         }
       });
     }
@@ -264,19 +264,39 @@ export class SupabaseService {
     return this.client;
   }
 
-  async signInWithCredentials(username: string, password: string): Promise<Usuario | null> {
-    const { data, error } = await this.getClient()
-      .from('usuario')
-      .select('codigo, nome, cpf, email')
-      .eq('nome', username.trim())
-      .eq('senha', password)
-      .maybeSingle<Usuario>();
+  async signInWithEmailPassword(email: string, password: string): Promise<User> {
+    const { data, error } = await this.getClient().auth.signInWithPassword({
+      email: email.trim(),
+      password
+    });
 
     if (error) {
       throw new Error(error.message);
     }
 
-    return data ?? null;
+    if (!data.user) {
+      throw new Error('Usuário não encontrado.');
+    }
+
+    return data.user;
+  }
+
+  async getCurrentSession(): Promise<Session | null> {
+    const { data, error } = await this.getClient().auth.getSession();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data.session ?? null;
+  }
+
+  async signOut(): Promise<void> {
+    const { error } = await this.getClient().auth.signOut();
+
+    if (error) {
+      throw new Error(error.message);
+    }
   }
 
   async listClientes(): Promise<Cliente[]> {

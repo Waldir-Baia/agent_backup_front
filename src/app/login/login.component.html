@@ -11,16 +11,16 @@
 
       <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
         <label class="form-field">
-          <span>Usuário</span>
+          <span>Email</span>
           <input
-            type="text"
-            inputmode="text"
-            formControlName="username"
-            placeholder="Nome do usuário"
+            type="email"
+            inputmode="email"
+            formControlName="email"
+            placeholder="email@empresa.com"
             autocomplete="username"
           />
-          @if (loginForm.controls.username.invalid && loginForm.controls.username.touched) {
-            <small class="form-field__feedback">Informe o nome do usuário.</small>
+          @if (loginForm.controls.email.invalid && loginForm.controls.email.touched) {
+            <small class="form-field__feedback">Informe um e-mail válido.</small>
           }
         </label>
 

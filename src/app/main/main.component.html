@@ -9,7 +9,7 @@
       <img class="sidenav-logo" src="assets/wbn-logo.svg" alt="WBN" />
       <div class="sidenav-header__info">
         <span class="sidenav-brand">Agent Backup</span>
-        <small *ngIf="user()?.nome">Olá, {{ user()?.nome }}</small>
+        <small *ngIf="user()">Olá, {{ user()?.name || user()?.email }}</small>
       </div>
     </div>
     <mat-nav-list>

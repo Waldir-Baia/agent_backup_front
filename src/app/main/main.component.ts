@@ -41,6 +41,7 @@ export class MainComponent {
 
   protected readonly navItems: NavItem[] = [
     { icon: 'business', label: 'Clientes', route: 'clientes' },
+    { icon: 'dns', label: 'Servidores', route: 'servidores' },
     { icon: 'event', label: 'Agendamentos', route: 'agendamentos' },
     { icon: 'play_arrow', label: 'Execução imediata', route: 'execucao' },
     { icon: 'menu_book', label: 'PlayBook', route: 'playbook' },

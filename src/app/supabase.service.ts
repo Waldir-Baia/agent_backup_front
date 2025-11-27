@@ -102,6 +102,7 @@ type Database = {
           nome_tarefa: string;
           comando: string;
           created_at: string;
+          ip_servidor: string | null;
         };
         Insert: {
           id?: number;
@@ -109,6 +110,7 @@ type Database = {
           nome_tarefa: string;
           comando: string;
           created_at?: string;
+          ip_servidor?: string | null;
         };
         Update: Partial<Omit<Database['public']['Tables']['execucoes_realtime']['Row'], 'id'>>;
         Relationships: [
@@ -169,6 +171,41 @@ type Database = {
           }
         ];
       };
+      servidores: {
+        Row: {
+          id: number;
+          cliente_id: number;
+          nome: string;
+          endereco_ip: string;
+          sistema_operacional: string | null;
+          status: number;
+          uptime_inicio: string | null;
+          mensagem_erro: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: number;
+          cliente_id: number;
+          nome: string;
+          endereco_ip: string;
+          sistema_operacional?: string | null;
+          status?: number;
+          uptime_inicio?: string | null;
+          mensagem_erro?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: Partial<Omit<Database['public']['Tables']['servidores']['Row'], 'id'>>;
+        Relationships: [
+          {
+            foreignKeyName: 'servidores_cliente_id_fkey';
+            columns: ['cliente_id'];
+            referencedRelation: 'clientes';
+            referencedColumns: ['id'];
+          }
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -191,6 +228,9 @@ export type PlaybookCommand = Database['public']['Tables']['playbook_comandos'][
 export type PlaybookCommandInsert = Database['public']['Tables']['playbook_comandos']['Insert'];
 export type PlaybookCommandUpdate = Database['public']['Tables']['playbook_comandos']['Update'];
 export type BackupLog = Database['public']['Tables']['backup_logs']['Row'];
+export type Servidor = Database['public']['Tables']['servidores']['Row'];
+export type ServidorInsert = Database['public']['Tables']['servidores']['Insert'];
+export type ServidorUpdate = Database['public']['Tables']['servidores']['Update'];
 
 /**
  * Centralizes Supabase access for the Angular app.
@@ -474,5 +514,69 @@ export class SupabaseService {
       data: (data ?? []) as BackupLog[],
       total: count ?? 0
     };
+  }
+
+  async listServidores(clienteId?: number): Promise<Servidor[]> {
+    let query = this.getClient()
+      .from('servidores')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (clienteId) {
+      query = query.eq('cliente_id', clienteId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return (data ?? []) as Servidor[];
+  }
+
+  async createServidor(payload: ServidorInsert): Promise<Servidor> {
+    const { data, error } = await this.getClient()
+      .from('servidores')
+      .insert(payload)
+      .select()
+      .maybeSingle<Servidor>();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!data) {
+      throw new Error('Erro ao criar servidor.');
+    }
+
+    return data;
+  }
+
+  async updateServidor(id: number, payload: ServidorUpdate): Promise<Servidor> {
+    const { data, error } = await this.getClient()
+      .from('servidores')
+      .update(payload)
+      .eq('id', id)
+      .select()
+      .maybeSingle<Servidor>();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (!data) {
+      throw new Error('Servidor não encontrado para atualização.');
+    }
+
+    return data;
+  }
+
+  async deleteServidor(id: number): Promise<void> {
+    const { error } = await this.getClient().from('servidores').delete().eq('id', id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
   }
 }

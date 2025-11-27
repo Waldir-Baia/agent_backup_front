@@ -30,6 +30,26 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
+            <mat-label>Servidor</mat-label>
+            <mat-select
+              formControlName="servidor_ip"
+              placeholder="Selecione o servidor"
+              [disabled]="loadingServidores() || servidores().length === 0"
+            >
+              <mat-option *ngIf="loadingServidores()" disabled>Carregando servidores...</mat-option>
+              <mat-option *ngIf="!loadingServidores() && servidores().length === 0" disabled>
+                Nenhum servidor cadastrado para este cliente.
+              </mat-option>
+              <mat-option *ngFor="let servidor of servidores()" [value]="servidor.endereco_ip">
+                {{ servidor.nome }} ({{ servidor.endereco_ip }})
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="execucaoForm.controls.servidor_ip.hasError('required')">
+              Selecione o servidor.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
             <mat-label>Nome da tarefa</mat-label>
             <input matInput formControlName="nome_tarefa" placeholder="Descrição rápida" />
             <mat-error *ngIf="execucaoForm.controls.nome_tarefa.hasError('required')">
@@ -86,6 +106,13 @@
               <th mat-header-cell *matHeaderCellDef>Comando</th>
               <td mat-cell *matCellDef="let item">
                 <code>{{ item.comando }}</code>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="ip_servidor">
+              <th mat-header-cell *matHeaderCellDef>IP do servidor</th>
+              <td mat-cell *matCellDef="let item">
+                {{ item.ip_servidor || '—' }}
               </td>
             </ng-container>
 

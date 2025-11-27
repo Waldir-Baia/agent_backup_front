@@ -1,0 +1,157 @@
+<section class="servidores-page">
+  <div class="page-header">
+    <div>
+      <h2>Servidores</h2>
+      <p>Cadastre e acompanhe os servidores por cliente.</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="showCreateForm()">Adicionar novo</button>
+  </div>
+
+  <section class="servidores-table">
+    <div class="table-wrapper" *ngIf="!loading(); else loadingState">
+      <table mat-table [dataSource]="servidores()" class="mat-elevation-z1">
+        <ng-container matColumnDef="cliente">
+          <th mat-header-cell *matHeaderCellDef>Cliente</th>
+          <td mat-cell *matCellDef="let servidor">{{ clienteNome(servidor.cliente_id) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="nome">
+          <th mat-header-cell *matHeaderCellDef>Servidor</th>
+          <td mat-cell *matCellDef="let servidor">{{ servidor.nome }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="endereco_ip">
+          <th mat-header-cell *matHeaderCellDef>Endereço IP</th>
+          <td mat-cell *matCellDef="let servidor">{{ servidor.endereco_ip }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="sistema_operacional">
+          <th mat-header-cell *matHeaderCellDef>Sistema operacional</th>
+          <td mat-cell *matCellDef="let servidor">
+            {{ servidor.sistema_operacional || 'Não informado' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let servidor">
+            <span
+              class="status-pill"
+              [class.status-pill--warning]="servidor.status === 2"
+              [class.status-pill--danger]="servidor.status === 3"
+              [class.status-pill--inactive]="servidor.status === 0"
+            >
+              {{ statusLabel(servidor.status) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="uptime_inicio">
+          <th mat-header-cell *matHeaderCellDef>Uptime</th>
+          <td mat-cell *matCellDef="let servidor">
+            {{ servidor.uptime_inicio ? (servidor.uptime_inicio | date: 'short') : '—' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let servidor">
+            <button mat-icon-button aria-label="Editar" (click)="startEdit(servidor)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button aria-label="Excluir" color="warn" (click)="delete(servidor)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+      <p class="empty-state" *ngIf="servidores().length === 0">
+        Nenhum servidor cadastrado até o momento.
+      </p>
+    </div>
+
+    <ng-template #loadingState>
+      <div class="loading-state">
+        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+        <span>Carregando servidores...</span>
+      </div>
+    </ng-template>
+  </section>
+
+  @if (isFormVisible()) {
+    <div class="overlay">
+      <mat-card class="servidor-form-card">
+        <div class="overlay-header">
+          <h3>{{ formMode() === 'create' ? 'Cadastrar servidor' : 'Editar servidor' }}</h3>
+          <button mat-icon-button type="button" aria-label="Fechar" (click)="closeForm()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <form [formGroup]="servidorForm" (ngSubmit)="submit()" class="servidor-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Cliente</mat-label>
+            <mat-select formControlName="cliente_id" placeholder="Selecione um cliente">
+              <mat-option *ngFor="let cliente of clientes()" [value]="cliente.id">
+                {{ cliente.nome_empresa }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="servidorForm.controls.cliente_id.hasError('required')">
+              Selecione o cliente.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nome do servidor</mat-label>
+            <input matInput formControlName="nome" placeholder="Ex: Fileserver 01" />
+            <mat-error *ngIf="servidorForm.controls.nome.hasError('required')">
+              Informe o nome do servidor.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Endereço IP</mat-label>
+            <input matInput formControlName="endereco_ip" placeholder="Ex: 10.0.0.12" />
+            <mat-error *ngIf="servidorForm.controls.endereco_ip.hasError('required')">
+              Informe o IP do servidor.
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Sistema operacional</mat-label>
+            <input matInput formControlName="sistema_operacional" placeholder="Ex: Ubuntu 22.04" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+                {{ status.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Uptime (início)</mat-label>
+            <input matInput type="datetime-local" formControlName="uptime_inicio" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Mensagem de erro</mat-label>
+            <textarea matInput formControlName="mensagem_erro" rows="2"></textarea>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-stroked-button type="button" (click)="closeForm()">Cancelar</button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+              {{ formMode() === 'create' ? 'Cadastrar' : 'Salvar alterações' }}
+            </button>
+          </div>
+        </form>
+      </mat-card>
+    </div>
+  }
+</section>

@@ -1,9 +1,13 @@
-<mat-sidenav-container class="layout-container">
-  <mat-sidenav
+<div class="layout-container">
+  <p-drawer
     class="layout-sidenav"
-    [opened]="sidenavOpened()"
-    mode="side"
-    [fixedInViewport]="false"
+    [visible]="sidenavOpened()"
+    position="left"
+    [modal]="false"
+    [showCloseIcon]="false"
+    [dismissible]="false"
+    [blockScroll]="false"
+    [style]="{ width: '260px', boxShadow: 'none' }"
   >
     <div class="sidenav-header">
       <img class="sidenav-logo" src="assets/wbn-logo.svg" alt="WBN" />
@@ -12,37 +16,39 @@
         <small *ngIf="user()">Olá, {{ user()?.name || user()?.email }}</small>
       </div>
     </div>
-    <mat-nav-list>
-      <a
-        mat-list-item
-        *ngFor="let item of navItems"
-        [routerLink]="item.route"
-        routerLinkActive="active-link"
-      >
-        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-        <span matListItemTitle>{{ item.label }}</span>
-      </a>
-    </mat-nav-list>
-    <div class="sidenav-footer">
-      <button mat-flat-button (click)="signOut()">Sair</button>
-    </div>
-  </mat-sidenav>
 
-  <mat-sidenav-content class="layout-content">
-    <mat-toolbar class="layout-toolbar">
+    <nav class="nav-menu">
+      <a
+        *ngFor="let item of navItems"
+        class="nav-link"
+        [routerLink]="item.route"
+        routerLinkActive="nav-link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidenav-footer">
+      <button pButton label="Sair" icon="pi pi-sign-out" (click)="signOut()" class="logout-btn"></button>
+    </div>
+  </p-drawer>
+
+  <div class="layout-content">
+    <div class="layout-toolbar">
       <button
-        mat-icon-button
-        class="toolbar-toggle"
+        pButton
+        icon="pi pi-bars"
+        class="toolbar-toggle p-button-text"
         (click)="toggleSidenav()"
         aria-label="Abrir menu"
-      >
-        <mat-icon>menu</mat-icon>
-      </button>
+      ></button>
       <span>Painel de Controle</span>
-    </mat-toolbar>
+    </div>
 
     <section class="layout-page">
       <router-outlet />
     </section>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+</div>

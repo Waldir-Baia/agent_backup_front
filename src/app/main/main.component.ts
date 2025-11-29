@@ -1,18 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { ButtonModule } from 'primeng/button';
+import { DrawerModule } from 'primeng/drawer';
 import { AuthService } from '../auth.service';
-
-interface NavItem {
-  icon: string;
-  label: string;
-  route: string;
-}
 
 @Component({
   selector: 'app-main',
@@ -22,11 +13,8 @@ interface NavItem {
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatListModule,
-    MatIconModule,
-    MatButtonModule
+    DrawerModule,
+    ButtonModule
   ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css'
@@ -39,13 +27,13 @@ export class MainComponent {
   protected readonly user = this.authService.currentUser;
   protected readonly sidenavOpened = signal(true);
 
-  protected readonly navItems: NavItem[] = [
-    { icon: 'business', label: 'Clientes', route: 'clientes' },
-    { icon: 'dns', label: 'Servidores', route: 'servidores' },
-    { icon: 'event', label: 'Agendamentos', route: 'agendamentos' },
-    { icon: 'play_arrow', label: 'Execução imediata', route: 'execucao' },
-    { icon: 'menu_book', label: 'PlayBook', route: 'playbook' },
-    { icon: 'description', label: 'Logs de backup', route: 'logs' }
+  protected readonly navItems = [
+    { label: 'Clientes', icon: 'pi pi-briefcase', route: 'clientes' },
+    { label: 'Servidores', icon: 'pi pi-server', route: 'servidores' },
+    { label: 'Agendamentos', icon: 'pi pi-calendar', route: 'agendamentos' },
+    { label: 'Execução imediata', icon: 'pi pi-play', route: 'execucao' },
+    { label: 'PlayBook', icon: 'pi pi-book', route: 'playbook' },
+    { label: 'Logs de backup', icon: 'pi pi-list', route: 'logs' }
   ];
 
   protected async signOut(): Promise<void> {

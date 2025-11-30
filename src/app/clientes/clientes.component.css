@@ -26,12 +26,46 @@
   color: rgba(29, 29, 29, 0.7);
 }
 
+.page-header button {
+  background: linear-gradient(135deg, #127f0b, #0f6b0a);
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.45);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.page-header button:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
 .clientes-table {
   width: 100%;
   background: #ffffff;
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 0 8px 20px -16px rgba(0, 0, 0, 0.35);
+}
+
+/* Diálogo com fundo sólido e cantos suaves */
+:host ::ng-deep .p-dialog .p-dialog-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 1rem 1.5rem;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 0 1.5rem 1.5rem;
+}
+
+.cliente-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .table-wrapper {
@@ -88,54 +122,71 @@ button[mat-icon-button][color='warn'] mat-icon {
   color: #d32f2f;
 }
 
-.cliente-form mat-slide-toggle {
-  margin-top: 0.5rem;
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  background-color: rgba(0, 0, 0, 0.3);
-  z-index: 20;
-}
-
-.cliente-form-card {
-  width: min(480px, 100%);
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 24px 45px -24px rgba(0, 0, 0, 0.5);
-  padding: 2rem 2rem 2.5rem;
+.form-row {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  max-height: calc(100vh - 4rem);
-  overflow-y: auto;
+  gap: 0.4rem;
 }
 
-.overlay-header {
-  display: flex;
+.form-row label {
+  font-weight: 600;
+  color: rgba(29, 29, 29, 0.8);
+}
+
+::ng-deep .cliente-form .p-inputtext {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 0.9rem 1rem;
+  background: #ffffff;
+}
+
+::ng-deep .cliente-form .p-inputtext:focus {
+  border-color: #127f0b;
+  box-shadow: 0 0 0 3px rgba(18, 127, 11, 0.12);
+}
+
+.field-error {
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.06);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.form-row.inline {
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
 }
 
-.overlay-header h3 {
+.form-row.inline label {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
 }
 
-.cliente-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+::ng-deep .p-toggleswitch {
+  min-width: 3.25rem;
+}
+
+::ng-deep .p-toggleswitch-slider {
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.16);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+::ng-deep .p-toggleswitch-checked .p-toggleswitch-slider {
+  background: linear-gradient(135deg, #127f0b, #0f6b0a);
+  box-shadow: 0 8px 16px -12px rgba(0, 0, 0, 0.4);
+}
+
+::ng-deep .p-toggleswitch-slider:before {
+  background: #ffffff;
 }
 
 .form-actions {
@@ -145,22 +196,22 @@ button[mat-icon-button][color='warn'] mat-icon {
   margin-top: 0.5rem;
 }
 
-.form-actions button[mat-flat-button] {
-  background-color: #127f0b;
-  color: #ffffff;
+.form-actions .p-button {
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
 }
 
-.form-actions button[mat-stroked-button] {
-  border-color: rgba(18, 127, 11, 0.35);
+.form-actions .p-button.p-button-text {
   color: #127f0b;
 }
 
-@media (max-width: 768px) {
-  .overlay {
-    padding: 1rem;
-  }
+.form-actions .p-button:not(.p-button-text) {
+  background: linear-gradient(135deg, #127f0b, #0f6b0a);
+  border: none;
+  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.45);
+}
 
-  .cliente-form-card {
-    padding: 1.75rem 1.5rem 2rem;
-  }
+.form-actions .p-button:not(.p-button-text):hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
 }

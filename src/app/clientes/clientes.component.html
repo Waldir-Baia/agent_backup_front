@@ -4,7 +4,7 @@
       <h2>Clientes</h2>
       <p>Gerencie as empresas que utilizam o agente de backup.</p>
     </div>
-    <button mat-flat-button color="primary" (click)="showCreateForm()">Adicionar novo</button>
+    <button pButton type="button" label="Adicionar novo" icon="pi pi-plus" (click)="showCreateForm()"></button>
   </div>
 
   <section class="clientes-table">
@@ -63,61 +63,80 @@
   </section>
 
   @if (isFormVisible()) {
-    <div class="overlay">
-      <mat-card class="cliente-form-card">
-        <div class="overlay-header">
-          <h3>{{ formMode() === 'create' ? 'Cadastrar cliente' : 'Editar cliente' }}</h3>
-          <button mat-icon-button type="button" aria-label="Fechar" (click)="closeForm()">
-            <mat-icon>close</mat-icon>
-          </button>
+    <p-dialog
+      [visible]="isFormVisible()"
+      (visibleChange)="isFormVisible.set($event)"
+      [modal]="true"
+      [draggable]="false"
+      [resizable]="false"
+      [style]="{ width: '520px' }"
+      [contentStyle]="{ padding: '1.5rem' }"
+      (onHide)="closeForm()"
+      [dismissableMask]="true"
+      header="{{ formMode() === 'create' ? 'Cadastrar cliente' : 'Editar cliente' }}"
+    >
+      <form [formGroup]="clienteForm" (ngSubmit)="submit()" class="cliente-form">
+        <div class="form-row">
+          <label for="client_id">Client ID</label>
+          <input
+            pInputText
+            id="client_id"
+            formControlName="client_id"
+            placeholder="Identificador único"
+          />
+          <small class="field-error" *ngIf="clienteForm.controls.client_id.hasError('required')">
+            Informe o identificador do cliente.
+          </small>
         </div>
 
-        <form [formGroup]="clienteForm" (ngSubmit)="submit()" class="cliente-form">
-          <mat-form-field appearance="outline">
-            <mat-label>Client ID</mat-label>
-            <input matInput formControlName="client_id" placeholder="Identificador único" />
-            <mat-error *ngIf="clienteForm.controls.client_id.hasError('required')">
-              Informe o identificador do cliente.
-            </mat-error>
-          </mat-form-field>
+        <div class="form-row">
+          <label for="nome_empresa">Nome da empresa</label>
+          <input
+            pInputText
+            id="nome_empresa"
+            formControlName="nome_empresa"
+            placeholder="Nome da empresa"
+          />
+          <small class="field-error" *ngIf="clienteForm.controls.nome_empresa.hasError('required')">
+            Informe o nome da empresa.
+          </small>
+        </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Nome da empresa</mat-label>
-            <input matInput formControlName="nome_empresa" placeholder="Nome da empresa" />
-            <mat-error *ngIf="clienteForm.controls.nome_empresa.hasError('required')">
-              Informe o nome da empresa.
-            </mat-error>
-          </mat-form-field>
+        <div class="form-row">
+          <label for="cnpj_empresa">CNPJ</label>
+          <input
+            pInputText
+            id="cnpj_empresa"
+            formControlName="cnpj_empresa"
+            placeholder="00.000.000/0000-00"
+            maxlength="18"
+            (input)="formatCnpjInput($event)"
+          />
+          <small class="field-error" *ngIf="clienteForm.controls.cnpj_empresa.hasError('required')">
+            Informe o CNPJ.
+          </small>
+          <small class="field-error" *ngIf="clienteForm.controls.cnpj_empresa.hasError('pattern')">
+            Utilize o formato 00.000.000/0000-00.
+          </small>
+        </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>CNPJ</mat-label>
-            <input
-              matInput
-              formControlName="cnpj_empresa"
-              placeholder="00.000.000/0000-00"
-              maxlength="18"
-              (input)="formatCnpjInput($event)"
-            />
-            <mat-error *ngIf="clienteForm.controls.cnpj_empresa.hasError('required')">
-              Informe o CNPJ.
-            </mat-error>
-            <mat-error *ngIf="clienteForm.controls.cnpj_empresa.hasError('pattern')">
-              Utilize o formato 00.000.000/0000-00.
-            </mat-error>
-          </mat-form-field>
+        <div class="form-row inline">
+          <label for="ativo">Cliente ativo</label>
+          <p-toggleSwitch formControlName="ativo"></p-toggleSwitch>
+        </div>
 
-          <mat-slide-toggle formControlName="ativo">
-            Cliente ativo
-          </mat-slide-toggle>
+        <p-divider></p-divider>
 
-          <div class="form-actions">
-            <button mat-stroked-button type="button" (click)="closeForm()">Cancelar</button>
-            <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
-              {{ formMode() === 'create' ? 'Cadastrar' : 'Salvar alterações' }}
-            </button>
-          </div>
-        </form>
-      </mat-card>
-    </div>
+        <div class="form-actions">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="closeForm()"></button>
+          <button
+            pButton
+            type="submit"
+            [label]="formMode() === 'create' ? 'Cadastrar' : 'Salvar alterações'"
+            [loading]="saving()"
+          ></button>
+        </div>
+      </form>
+    </p-dialog>
   }
 </section>

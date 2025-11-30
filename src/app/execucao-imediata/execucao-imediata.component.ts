@@ -1,16 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatOptionModule } from '@angular/material/core';
-import { MatSelectModule, MatSelectChange } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
+import { TableModule } from 'primeng/table';
+import { DividerModule } from 'primeng/divider';
 import {
   Cliente,
   Servidor,
@@ -25,16 +23,14 @@ import {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatOptionModule,
-    MatButtonModule,
     MatSnackBarModule,
-    MatTableModule,
-    MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    ButtonModule,
+    SelectModule,
+    InputTextModule,
+    TextareaModule,
+    TableModule,
+    DividerModule
   ],
   templateUrl: './execucao-imediata.component.html',
   styleUrl: './execucao-imediata.component.css'
@@ -175,8 +171,7 @@ export class ExecucaoImediataComponent {
     }
   }
 
-  protected async handleClientSelection(event: MatSelectChange): Promise<void> {
-    const clientId = event.value;
+  protected async handleClientSelection(clientId: string): Promise<void> {
     this.execucaoForm.controls.client_id.setValue(clientId, { emitEvent: false });
 
     if (clientId) {

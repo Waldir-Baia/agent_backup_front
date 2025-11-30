@@ -7,118 +7,108 @@
   </div>
 
   <div class="page-content">
-    <mat-card class="execucao-form-card">
-      <mat-card-header>
-        <mat-card-title>Enviar comando agora</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="execucaoForm" (ngSubmit)="submit()" class="execucao-form">
-          <mat-form-field appearance="outline">
-            <mat-label>Cliente</mat-label>
-            <mat-select
-              formControlName="client_id"
-              placeholder="Selecione um cliente"
-              (selectionChange)="handleClientSelection($event)"
-            >
-              <mat-option *ngFor="let cliente of clientes()" [value]="cliente.client_id">
-                {{ cliente.nome_empresa }} ({{ cliente.client_id }})
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="execucaoForm.controls.client_id.hasError('required')">
-              Selecione o cliente.
-            </mat-error>
-          </mat-form-field>
+    <div class="execucao-form-card">
+      <header>
+        <h3>Enviar comando agora</h3>
+      </header>
+      <form [formGroup]="execucaoForm" (ngSubmit)="submit()" class="execucao-form">
+        <div class="form-row">
+          <label for="client_id">Cliente</label>
+          <p-select
+            id="client_id"
+            formControlName="client_id"
+            [options]="clientes()"
+            optionLabel="nome_empresa"
+            optionValue="client_id"
+            placeholder="Selecione um cliente"
+            [showClear]="true"
+            (onChange)="handleClientSelection($event.value)"
+          ></p-select>
+          <small class="field-error" *ngIf="execucaoForm.controls.client_id.hasError('required')">
+            Selecione o cliente.
+          </small>
+        </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Servidor</mat-label>
-            <mat-select
-              formControlName="servidor_ip"
-              placeholder="Selecione o servidor"
-              [disabled]="loadingServidores() || servidores().length === 0"
-            >
-              <mat-option *ngIf="loadingServidores()" disabled>Carregando servidores...</mat-option>
-              <mat-option *ngIf="!loadingServidores() && servidores().length === 0" disabled>
+        <div class="form-row">
+          <label for="servidor_ip">Servidor</label>
+          <p-select
+            id="servidor_ip"
+            formControlName="servidor_ip"
+            placeholder="Selecione o servidor"
+            [options]="servidores()"
+            optionLabel="nome"
+            optionValue="endereco_ip"
+            [disabled]="loadingServidores() || servidores().length === 0"
+          >
+            <ng-template pTemplate="empty">
+              <span *ngIf="loadingServidores()">Carregando servidores...</span>
+              <span *ngIf="!loadingServidores() && servidores().length === 0">
                 Nenhum servidor cadastrado para este cliente.
-              </mat-option>
-              <mat-option *ngFor="let servidor of servidores()" [value]="servidor.endereco_ip">
-                {{ servidor.nome }} ({{ servidor.endereco_ip }})
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="execucaoForm.controls.servidor_ip.hasError('required')">
-              Selecione o servidor.
-            </mat-error>
-          </mat-form-field>
+              </span>
+            </ng-template>
+          </p-select>
+          <small class="field-error" *ngIf="execucaoForm.controls.servidor_ip.hasError('required')">
+            Selecione o servidor.
+          </small>
+        </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Nome da tarefa</mat-label>
-            <input matInput formControlName="nome_tarefa" placeholder="Descrição rápida" />
-            <mat-error *ngIf="execucaoForm.controls.nome_tarefa.hasError('required')">
-              Informe uma descrição.
-            </mat-error>
-          </mat-form-field>
+        <div class="form-row">
+          <label for="nome_tarefa">Nome da tarefa</label>
+          <input pInputText id="nome_tarefa" formControlName="nome_tarefa" placeholder="Descrição rápida" />
+          <small class="field-error" *ngIf="execucaoForm.controls.nome_tarefa.hasError('required')">
+            Informe uma descrição.
+          </small>
+        </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Comando Rclone</mat-label>
-            <textarea matInput formControlName="comando" rows="4" placeholder="rclone lsd …"></textarea>
-            <mat-error *ngIf="execucaoForm.controls.comando.hasError('required')">
-              Informe o comando que será enviado.
-            </mat-error>
-          </mat-form-field>
+        <div class="form-row">
+          <label for="comando">Comando Rclone</label>
+          <textarea pTextarea id="comando" formControlName="comando" rows="4" placeholder="rclone lsd …"></textarea>
+          <small class="field-error" *ngIf="execucaoForm.controls.comando.hasError('required')">
+            Informe o comando que será enviado.
+          </small>
+        </div>
 
-          <div class="form-actions">
-            <button mat-flat-button color="primary" type="submit" [disabled]="submitting()">
-              Executar agora
-            </button>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
+        <p-divider></p-divider>
 
-    <mat-card class="historico-card">
-      <mat-card-header>
-        <mat-card-title>Últimas execuções</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
+        <div class="form-actions">
+          <button pButton type="submit" label="Executar agora" [loading]="submitting()"></button>
+        </div>
+      </form>
+    </div>
+
+    <div class="historico-card">
+      <header>
+        <h3>Últimas execuções</h3>
+      </header>
+      <div class="historico-content">
         <ng-container *ngIf="!loadingHistorico(); else loadingState">
           <p class="empty-state" *ngIf="historico().length === 0">
             Selecione um cliente para visualizar o histórico.
           </p>
 
-          <table
-            mat-table
-            [dataSource]="historico()"
-            class="mat-elevation-z1"
+          <p-table
             *ngIf="historico().length > 0"
+            [value]="historico()"
+            [paginator]="false"
+            class="historico-table"
           >
-            <ng-container matColumnDef="created_at">
-              <th mat-header-cell *matHeaderCellDef>Data</th>
-              <td mat-cell *matCellDef="let item">
-                {{ item.created_at | date: 'dd/MM/yyyy HH:mm' }}
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="nome_tarefa">
-              <th mat-header-cell *matHeaderCellDef>Tarefa</th>
-              <td mat-cell *matCellDef="let item">{{ item.nome_tarefa }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="comando">
-              <th mat-header-cell *matHeaderCellDef>Comando</th>
-              <td mat-cell *matCellDef="let item">
-                <code>{{ item.comando }}</code>
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="ip_servidor">
-              <th mat-header-cell *matHeaderCellDef>IP do servidor</th>
-              <td mat-cell *matCellDef="let item">
-                {{ item.ip_servidor || '—' }}
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-          </table>
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Data</th>
+                <th>Tarefa</th>
+                <th>Comando</th>
+                <th>IP do servidor</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+              <tr>
+                <td>{{ item.created_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ item.nome_tarefa }}</td>
+                <td><code>{{ item.comando }}</code></td>
+                <td>{{ item.ip_servidor || '—' }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
         </ng-container>
 
         <ng-template #loadingState>
@@ -127,7 +117,7 @@
             <span>Carregando histórico...</span>
           </div>
         </ng-template>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
   </div>
 </section>

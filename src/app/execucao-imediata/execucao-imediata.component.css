@@ -21,8 +21,24 @@
 
 .page-content {
   display: grid;
-  grid-template-columns: minmax(320px, 360px) 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.5rem;
+}
+
+.execucao-form-card,
+.historico-card {
+  border-radius: 18px;
+  box-shadow: 0 16px 30px -24px rgba(0, 0, 0, 0.4);
+  background: #ffffff;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.execucao-form-card header,
+.historico-card header {
+  margin-bottom: 0.5rem;
 }
 
 .execucao-form {
@@ -31,25 +47,82 @@
   gap: 1rem;
 }
 
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-row label {
+  font-weight: 600;
+  color: rgba(29, 29, 29, 0.8);
+}
+
+::ng-deep .execucao-form .p-inputtext,
+::ng-deep .execucao-form .p-select,
+::ng-deep .execucao-form .p-textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 0.9rem 1rem;
+  background: #ffffff;
+}
+
+::ng-deep .execucao-form .p-inputtext:focus,
+::ng-deep .execucao-form .p-select.p-focus,
+::ng-deep .execucao-form .p-select.p-focus .p-select-label,
+::ng-deep .execucao-form .p-textarea:focus {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: none;
+}
+
+.field-error {
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.06);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
 }
 
-.form-actions button[mat-flat-button] {
-  background-color: #127f0b;
+.form-actions .p-button {
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+  background: linear-gradient(135deg, #127f0b, #0f6b0a);
+  border: none;
   color: #ffffff;
+  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.45);
 }
 
-.historico-card table {
+.historico-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.historico-table {
   width: 100%;
 }
 
-.historico-card code {
+:host ::ng-deep .historico-table .p-datatable-thead > tr > th,
+:host ::ng-deep .historico-table .p-datatable-tbody > tr > td {
+  padding: 0.65rem 0.75rem;
+}
+
+.historico-table code {
   white-space: pre-wrap;
   word-break: break-word;
   font-family: 'JetBrains Mono', monospace;
-  background-color: rgba(29, 29, 29, 0.04);
+  background-color: rgba(29, 29, 29, 0.05);
   padding: 0.35rem 0.5rem;
   border-radius: 8px;
   display: inline-block;
@@ -67,20 +140,4 @@
   justify-content: center;
   gap: 1rem;
   color: rgba(29, 29, 29, 0.6);
-}
-
-th.mat-header-cell {
-  color: rgba(29, 29, 29, 0.7);
-  font-weight: 600;
-}
-
-td.mat-cell,
-th.mat-header-cell {
-  padding: 0.75rem;
-}
-
-@media (max-width: 960px) {
-  .page-content {
-    grid-template-columns: 1fr;
-  }
 }

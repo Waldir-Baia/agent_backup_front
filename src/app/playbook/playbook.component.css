@@ -96,29 +96,12 @@
 
 .playbook-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
 }
 
-.playbook-table th,
-.playbook-table td {
+:host ::ng-deep .playbook-table .p-datatable-thead > tr > th,
+:host ::ng-deep .playbook-table .p-datatable-tbody > tr > td {
   padding: 0.75rem 0.75rem;
   vertical-align: middle;
-}
-
-.playbook-table th.cdk-column-titulo,
-.playbook-table td.cdk-column-titulo {
-  width: 18%;
-}
-
-.playbook-table th.cdk-column-descricao,
-.playbook-table td.cdk-column-descricao {
-  width: 26%;
-}
-
-.playbook-table th.cdk-column-comando,
-.playbook-table td.cdk-column-comando {
-  width: 40%;
 }
 
 .cell-title {
@@ -145,23 +128,15 @@
 
 .actions-column {
   width: 110px;
-}
-
-.playbook-table th.actions-column {
   text-align: right;
-  padding-right: 5.0rem;
-  padding-left: 0.5rem;
+  display: inline-flex;
   align-items: center;
-}
-
-.playbook-row td.actions-column {
-  gap: 0.25rem;
-  padding-right: 0;
-  padding-left: 1.8rem;
+  justify-content: flex-end;
+  gap: 0.35rem;
 }
 
 .actions-column .p-button {
-  margin-right: 0.25rem;
+  margin-right: 0;
 }
 
 .table-header button.p-button {

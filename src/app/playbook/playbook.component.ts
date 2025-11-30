@@ -3,9 +3,9 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { TableModule } from 'primeng/table';
 import {
   PlaybookCommand,
   SupabaseService
@@ -25,11 +25,11 @@ import {
   imports: [
     CommonModule,
     MatSnackBarModule,
-    MatTableModule,
     MatProgressSpinnerModule,
     MatDialogModule,
     ButtonModule,
-    InputTextModule
+    InputTextModule,
+    TableModule
   ],
   templateUrl: './playbook.component.html',
   styleUrl: './playbook.component.css'

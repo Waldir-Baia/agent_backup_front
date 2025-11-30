@@ -47,60 +47,38 @@
   width: 100%;
 }
 
-.client-selector-card {
-  width: 100%;
-  display: grid;
-  gap: 1.5rem;
-  padding: 1.75rem 2rem;
-  border-radius: 24px;
-  background: linear-gradient(135deg, #ffffff 0%, rgba(18, 127, 11, 0.04) 100%);
-  border: 1px solid rgba(18, 127, 11, 0.12);
-  box-shadow: 0 24px 45px -28px rgba(18, 127, 11, 0.35);
-}
-
-.client-selector-card__header {
+.agendamentos-filters {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
-.client-selector-card__icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  background: rgba(18, 127, 11, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #127f0b;
-}
-
-.client-selector-card__icon mat-icon {
-  font-size: 28px;
-}
-
-.client-selector-card__copy h3 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.client-selector-card__copy p {
-  margin: 0.15rem 0 0;
-  color: rgba(29, 29, 29, 0.6);
-}
-
-.client-selector-field {
-  width: 100%;
-}
-
-.client-option {
-  display: flex;
+.search-field {
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-weight: 400;
-  color: #1d1d1d;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 0.5rem 0.65rem 0.5rem 0.75rem;
+  background: #ffffff;
+  box-shadow: 0 8px 20px -18px rgba(0, 0, 0, 0.3);
+  min-width: 320px;
+  max-width: 100%;
+}
+
+.search-field i {
+  color: rgba(29, 29, 29, 0.55);
+}
+
+.search-field input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 0.35rem 0.35rem;
+  font-size: 0.95rem;
+}
+
+.search-field input:focus {
+  outline: none;
 }
 
 .agendamento-form {
@@ -193,21 +171,17 @@
   box-shadow: 0 8px 20px -16px rgba(0, 0, 0, 0.35);
 }
 
-.table-wrapper {
-  overflow: auto;
-}
-
-table {
+.agendamentos-table__grid {
   width: 100%;
 }
 
-th.mat-header-cell {
+:host ::ng-deep .agendamentos-table__grid .p-datatable-thead > tr > th {
   color: rgba(29, 29, 29, 0.7);
   font-weight: 600;
+  padding: 0.75rem;
 }
 
-td.mat-cell,
-th.mat-header-cell {
+:host ::ng-deep .agendamentos-table__grid .p-datatable-tbody > tr > td {
   padding: 0.75rem;
   vertical-align: top;
 }

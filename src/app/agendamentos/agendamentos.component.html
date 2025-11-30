@@ -2,126 +2,72 @@
   <div class="page-header">
     <div>
       <h2>Agendamentos</h2>
-      <p>Configure os períodos de execução do Rclone para cada cliente.</p>
+      <p>Todos os comandos programados. Filtre por cliente ou termo.</p>
     </div>
 
     <button pButton type="button" label="Incluir agendamento" icon="pi pi-plus" (click)="showCreateForm()"></button>
   </div>
 
-  <section class="client-selector">
-    <mat-card class="client-selector-card">
-      <div class="client-selector-card__header">
-        <div class="client-selector-card__icon">
-          <mat-icon>groups</mat-icon>
-        </div>
-        <div class="client-selector-card__copy">
-          <h3>Selecionar cliente</h3>
-          <p>Busque pelo nome ou CNPJ para visualizar ou criar agendamentos.</p>
-        </div>
-      </div>
-
-      <mat-form-field appearance="fill" class="client-selector-field">
-        <mat-label>Cliente</mat-label>
-        <mat-icon matPrefix>search</mat-icon>
-        <input
-          matInput
-          [formControl]="clientFilterControl"
-          [matAutocomplete]="clienteAutocomplete"
-          placeholder="Digite para buscar..."
-          autocomplete="off"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          aria-label="Limpar seleção"
-          *ngIf="selectedClientId() || clientFilterControl.value"
-          (click)="clearClientSelection()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-        <mat-autocomplete
-          #clienteAutocomplete="matAutocomplete"
-          [displayWith]="clientDisplayWith"
-          (optionSelected)="onClientSelected($event.option.value)"
-        >
-          <mat-option
-            *ngFor="let cliente of filteredClientes()"
-            [value]="cliente.client_id"
-            class="client-option"
-          >
-            {{ cliente.nome_empresa }} - {{ formatCnpj(cliente.cnpj_empresa) }}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-    </mat-card>
-  </section>
+  <div class="agendamentos-filters">
+    <div class="search-field">
+      <i class="pi pi-search"></i>
+      <input
+        pInputText
+        type="search"
+        placeholder="Filtrar por cliente, nome ou comando"
+        [value]="filterTerm()"
+        (input)="filterTerm.set($any($event.target).value)"
+      />
+      <button
+        pButton
+        *ngIf="filterTerm()"
+        type="button"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="filterTerm.set('')"
+      ></button>
+    </div>
+  </div>
 
   <section class="agendamentos-table">
-    @if (selectedClientId()) {
-      @if (!loading()) {
-        <div class="table-wrapper">
-          <table mat-table [dataSource]="agendamentos()" class="mat-elevation-z1">
-            <ng-container matColumnDef="schedule_name">
-              <th mat-header-cell *matHeaderCellDef>Nome</th>
-              <td mat-cell *matCellDef="let agendamento">{{ agendamento.schedule_name }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="rclone_command">
-              <th mat-header-cell *matHeaderCellDef>Comando</th>
-              <td mat-cell *matCellDef="let agendamento" class="command-cell">
-                <code>{{ agendamento.rclone_command }}</code>
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="cron_expression">
-              <th mat-header-cell *matHeaderCellDef>Cron</th>
-              <td mat-cell *matCellDef="let agendamento">{{ agendamento.cron_expression }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="is_active">
-              <th mat-header-cell *matHeaderCellDef>Status</th>
-              <td mat-cell *matCellDef="let agendamento">
-                <span class="status-chip" [class.active]="agendamento.is_active">
-                  {{ agendamento.is_active ? 'Ativo' : 'Inativo' }}
-                </span>
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef></th>
-              <td mat-cell *matCellDef="let agendamento">
-                <button mat-icon-button aria-label="Editar" (click)="startEdit(agendamento)">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  aria-label="Excluir"
-                  color="warn"
-                  (click)="delete(agendamento)"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-          </table>
-          <p class="empty-state" *ngIf="agendamentos().length === 0">
-            Nenhum agendamento cadastrado para este cliente.
-          </p>
-        </div>
-      } @else {
-        <div class="loading-state">
-          <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
-          <span>Carregando agendamentos...</span>
-        </div>
-      }
-    } @else {
-      <p class="empty-state">
-        Selecione um cliente para visualizar os agendamentos.
+    @if (!loading()) {
+      <p-table [value]="filteredAgendamentos()" [paginator]="false" class="agendamentos-table__grid">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Nome</th>
+            <th>Cliente</th>
+            <th>Comando</th>
+            <th>Cron</th>
+            <th>Status</th>
+            <th class="actions-col"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-agendamento>
+          <tr>
+            <td>{{ agendamento.schedule_name }}</td>
+            <td>{{ clientDisplayName(agendamento.client_id) }}</td>
+            <td class="command-cell"><code>{{ agendamento.rclone_command }}</code></td>
+            <td>{{ agendamento.cron_expression }}</td>
+            <td>
+              <span class="status-chip" [class.active]="agendamento.is_active">
+                {{ agendamento.is_active ? 'Ativo' : 'Inativo' }}
+              </span>
+            </td>
+            <td class="actions-col">
+              <button pButton type="button" icon="pi pi-pencil" class="p-button-text" (click)="startEdit(agendamento)"></button>
+              <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text" (click)="delete(agendamento)"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <p class="empty-state" *ngIf="filteredAgendamentos().length === 0">
+        Nenhum agendamento encontrado com o filtro atual.
       </p>
+    } @else {
+      <div class="loading-state">
+        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+        <span>Carregando agendamentos...</span>
+      </div>
     }
   </section>
 

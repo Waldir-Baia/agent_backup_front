@@ -371,6 +371,19 @@ export class SupabaseService {
     return (data ?? []) as Agendamento[];
   }
 
+  async listAgendamentosAll(): Promise<Agendamento[]> {
+    const { data, error } = await this.getClient()
+      .from('agendamentos')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return (data ?? []) as Agendamento[];
+  }
+
   async createAgendamento(payload: AgendamentoInsert): Promise<Agendamento> {
     const { data, error } = await this.getClient()
       .from('agendamentos')

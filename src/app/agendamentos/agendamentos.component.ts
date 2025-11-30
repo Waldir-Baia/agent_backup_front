@@ -10,7 +10,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -19,6 +18,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { DividerModule } from 'primeng/divider';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { TableModule } from 'primeng/table';
 import {
   Agendamento,
   AgendamentoInsert,
@@ -35,7 +35,6 @@ type FormMode = 'create' | 'edit';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatTableModule,
     MatFormFieldModule,
     MatInputModule,
     MatAutocompleteModule,
@@ -51,7 +50,8 @@ type FormMode = 'create' | 'edit';
     SelectModule,
     ToggleSwitchModule,
     ButtonModule,
-    DividerModule
+    DividerModule,
+    TableModule
   ],
   templateUrl: './agendamentos.component.html',
   styleUrl: './agendamentos.component.css'
@@ -71,32 +71,34 @@ export class AgendamentosComponent {
 
   protected readonly clientes = signal<Cliente[]>([]);
   protected readonly agendamentos = signal<Agendamento[]>([]);
-  protected readonly selectedClientId = signal<string | null>(null);
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly formMode = signal<FormMode>('create');
   protected readonly editingAgendamento = signal<Agendamento | null>(null);
   protected readonly isFormVisible = signal(false);
 
-  protected readonly clientFilterControl = this.formBuilder.nonNullable.control('');
-  protected readonly clientSearchTerm = signal('');
+  protected readonly filterTerm = signal('');
 
-  protected readonly filteredClientes = computed(() =>
-    this.filterClientes(this.clientSearchTerm())
-  );
-  protected readonly clientDisplayWith = (clientId: string | null): string => {
-    if (!clientId) {
-      return '';
+  protected readonly filteredAgendamentos = computed(() => {
+    const term = this.filterTerm().trim().toLowerCase();
+    if (!term) {
+      return this.agendamentos();
     }
-    const cliente = this.clientes().find((item) => item.client_id === clientId);
-    if (!cliente) {
-      return clientId;
-    }
-    const formattedCnpj = this.formatCnpj(cliente.cnpj_empresa);
-    return formattedCnpj
-      ? `${cliente.nome_empresa} - ${formattedCnpj}`
-      : cliente.nome_empresa;
-  };
+    return this.agendamentos().filter((item) => {
+      const cliente = this.clientes().find((c) => c.client_id === item.client_id);
+      const clienteNome = cliente?.nome_empresa?.toLowerCase() ?? '';
+      const fields = [
+        item.schedule_name,
+        item.rclone_command,
+        item.cron_expression,
+        item.client_id,
+        clienteNome
+      ]
+        .join(' ')
+        .toLowerCase();
+      return fields.includes(term);
+    });
+  });
 
   protected readonly agendamentoForm = this.formBuilder.nonNullable.group({
     client_id: ['', Validators.required],
@@ -110,28 +112,13 @@ export class AgendamentosComponent {
   constructor() {
     this.loadClientes();
 
-    this.clientFilterControl.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((value) => {
-        this.clientSearchTerm.set(value.trim().toLowerCase());
-      });
-
     effect(() => {
       if (this.formMode() === 'create') {
         this.editingAgendamento.set(null);
       }
     });
 
-    effect(() => {
-      const selectedId = this.selectedClientId();
-      if (!selectedId) {
-        return;
-      }
-      const exists = this.clientes().some((cliente) => cliente.client_id === selectedId);
-      if (!exists) {
-        this.clearClientSelection();
-      }
-    });
+    void this.loadAgendamentosAll();
   }
 
   protected async loadClientes(): Promise<void> {
@@ -146,35 +133,10 @@ export class AgendamentosComponent {
     }
   }
 
-  protected async onClientSelected(clientId: string): Promise<void> {
-    const cliente = this.clientes().find((item) => item.client_id === clientId);
-    if (!cliente) {
-      return;
-    }
-
-    this.clientFilterControl.setValue(cliente.client_id, { emitEvent: false });
-    this.clientSearchTerm.set('');
-    this.selectedClientId.set(cliente.client_id);
-    this.closeForm();
-    await this.loadAgendamentos(cliente.client_id);
-  }
-
-  protected clearClientSelection(): void {
-    this.selectedClientId.set(null);
-    this.clientFilterControl.setValue('', { emitEvent: false });
-    this.clientSearchTerm.set('');
-    this.agendamentos.set([]);
-  }
-
-  protected async loadAgendamentos(clientId: string): Promise<void> {
-    if (!clientId) {
-      this.agendamentos.set([]);
-      return;
-    }
-
+  protected async loadAgendamentosAll(): Promise<void> {
     this.loading.set(true);
     try {
-      const data = await this.supabaseService.listAgendamentos(clientId);
+      const data = await this.supabaseService.listAgendamentosAll();
       this.agendamentos.set(data);
     } catch (error) {
       console.error('Erro ao carregar agendamentos', error);
@@ -189,7 +151,7 @@ export class AgendamentosComponent {
   protected showCreateForm(): void {
     this.formMode.set('create');
     this.editingAgendamento.set(null);
-    this.resetForm(this.selectedClientId());
+    this.resetForm('');
     this.isFormVisible.set(true);
   }
 
@@ -211,7 +173,7 @@ export class AgendamentosComponent {
     this.isFormVisible.set(false);
     this.formMode.set('create');
     this.editingAgendamento.set(null);
-    this.resetForm(this.selectedClientId());
+    this.resetForm('');
   }
 
   protected async submit(): Promise<void> {
@@ -266,9 +228,6 @@ export class AgendamentosComponent {
         });
       }
 
-      this.selectedClientId.set(clientId);
-      this.clientFilterControl.setValue(clientId, { emitEvent: false });
-      this.clientSearchTerm.set('');
       this.closeForm();
     } catch (error) {
       console.error('Erro ao salvar agendamento', error);
@@ -277,9 +236,7 @@ export class AgendamentosComponent {
       });
     } finally {
       this.saving.set(false);
-      if (clientId) {
-        await this.loadAgendamentos(clientId);
-      }
+      await this.loadAgendamentosAll();
     }
   }
 
@@ -292,6 +249,15 @@ export class AgendamentosComponent {
       remote_path: '',
       is_active: true
     });
+  }
+
+  protected clientDisplayName(clientId: string): string {
+    const cliente = this.clientes().find((c) => c.client_id === clientId);
+    if (!cliente) {
+      return clientId;
+    }
+    const cnpj = this.formatCnpj(cliente.cnpj_empresa);
+    return cnpj ? `${cliente.nome_empresa} - ${cnpj}` : cliente.nome_empresa;
   }
 
   private filterClientes(term: string): Cliente[] {

@@ -8,55 +8,40 @@
   </div>
 
   <section class="clientes-table">
-    <div class="table-wrapper" *ngIf="!loading(); else loadingState">
-      <table mat-table [dataSource]="clientes()" class="mat-elevation-z1">
-        <ng-container matColumnDef="client_id">
-          <th mat-header-cell *matHeaderCellDef>Client ID</th>
-          <td mat-cell *matCellDef="let cliente">{{ cliente.client_id }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="nome_empresa">
-          <th mat-header-cell *matHeaderCellDef>Empresa</th>
-          <td mat-cell *matCellDef="let cliente">{{ cliente.nome_empresa }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="cnpj_empresa">
-          <th mat-header-cell *matHeaderCellDef>CNPJ</th>
-          <td mat-cell *matCellDef="let cliente">{{ cliente.cnpj_empresa }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="ativo">
-          <th mat-header-cell *matHeaderCellDef>Ativo</th>
-          <td mat-cell *matCellDef="let cliente">
+    <p-table
+      *ngIf="!loading(); else loadingState"
+      [value]="clientes()"
+      [paginator]="false"
+      class="clientes-table__grid"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Client ID</th>
+          <th>Empresa</th>
+          <th>CNPJ</th>
+          <th>Ativo</th>
+          <th class="actions-col"></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-cliente>
+        <tr>
+          <td>{{ cliente.client_id }}</td>
+          <td>{{ cliente.nome_empresa }}</td>
+          <td>{{ cliente.cnpj_empresa }}</td>
+          <td>
             <span class="status-pill" [class.status-pill--inactive]="!cliente.ativo">
               {{ cliente.ativo ? 'Sim' : 'Não' }}
             </span>
           </td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let cliente">
-            <button mat-icon-button aria-label="Editar" (click)="startEdit(cliente)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button aria-label="Excluir" color="warn" (click)="delete(cliente)">
-              <mat-icon>delete</mat-icon>
-            </button>
+          <td class="actions-col">
+            <button pButton type="button" icon="pi pi-pencil" class="p-button-text" (click)="startEdit(cliente)"></button>
+            <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text" (click)="delete(cliente)"></button>
           </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-      </table>
-      <p class="empty-state" *ngIf="clientes().length === 0">
-        Nenhum cliente cadastrado até o momento.
-      </p>
-    </div>
-
+        </tr>
+      </ng-template>
+    </p-table>
     <ng-template #loadingState>
       <div class="loading-state">
-        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
         <span>Carregando clientes...</span>
       </div>
     </ng-template>

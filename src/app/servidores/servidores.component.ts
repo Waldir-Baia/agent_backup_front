@@ -1,11 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
@@ -13,6 +10,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DividerModule } from 'primeng/divider';
 import { DatePickerModule } from 'primeng/datepicker';
+import { TableModule } from 'primeng/table';
 import {
   Cliente,
   Servidor,
@@ -36,9 +34,6 @@ const STATUS_OPTIONS: { value: number; label: string }[] = [
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
     DialogModule,
@@ -47,7 +42,8 @@ const STATUS_OPTIONS: { value: number; label: string }[] = [
     SelectModule,
     DatePickerModule,
     ButtonModule,
-    DividerModule
+    DividerModule,
+    TableModule
   ],
   templateUrl: './servidores.component.html',
   styleUrl: './servidores.component.css'

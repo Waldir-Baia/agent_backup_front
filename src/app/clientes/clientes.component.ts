@@ -1,16 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { DividerModule } from 'primeng/divider';
+import { TableModule } from 'primeng/table';
 import { Cliente, ClienteInsert, ClienteUpdate, SupabaseService } from '../supabase.service';
 
 type FormMode = 'create' | 'edit';
@@ -21,16 +18,13 @@ type FormMode = 'create' | 'edit';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule,
     DialogModule,
     InputTextModule,
     ToggleSwitchModule,
     ButtonModule,
-    DividerModule
+    DividerModule,
+    TableModule
   ],
   templateUrl: './clientes.component.html',
   styleUrl: './clientes.component.css'

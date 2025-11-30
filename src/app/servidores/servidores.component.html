@@ -8,33 +8,30 @@
   </div>
 
   <section class="servidores-table">
-    <div class="table-wrapper" *ngIf="!loading(); else loadingState">
-      <table mat-table [dataSource]="servidores()" class="mat-elevation-z1">
-        <ng-container matColumnDef="cliente">
-          <th mat-header-cell *matHeaderCellDef>Cliente</th>
-          <td mat-cell *matCellDef="let servidor">{{ clienteNome(servidor.cliente_id) }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="nome">
-          <th mat-header-cell *matHeaderCellDef>Servidor</th>
-          <td mat-cell *matCellDef="let servidor">{{ servidor.nome }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="endereco_ip">
-          <th mat-header-cell *matHeaderCellDef>Endereço IP</th>
-          <td mat-cell *matCellDef="let servidor">{{ servidor.endereco_ip }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="sistema_operacional">
-          <th mat-header-cell *matHeaderCellDef>Sistema operacional</th>
-          <td mat-cell *matCellDef="let servidor">
-            {{ servidor.sistema_operacional || 'Não informado' }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
-          <td mat-cell *matCellDef="let servidor">
+    <p-table
+      *ngIf="!loading(); else loadingState"
+      [value]="servidores()"
+      [paginator]="false"
+      class="servidores-table__grid"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Cliente</th>
+          <th>Servidor</th>
+          <th>Endereço IP</th>
+          <th>Sistema operacional</th>
+          <th>Status</th>
+          <th>Uptime</th>
+          <th class="actions-col"></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-servidor>
+        <tr>
+          <td>{{ clienteNome(servidor.cliente_id) }}</td>
+          <td>{{ servidor.nome }}</td>
+          <td>{{ servidor.endereco_ip }}</td>
+          <td>{{ servidor.sistema_operacional || 'Não informado' }}</td>
+          <td>
             <span
               class="status-pill"
               [class.status-pill--warning]="servidor.status === 2"
@@ -44,38 +41,16 @@
               {{ statusLabel(servidor.status) }}
             </span>
           </td>
-        </ng-container>
-
-        <ng-container matColumnDef="uptime_inicio">
-          <th mat-header-cell *matHeaderCellDef>Uptime</th>
-          <td mat-cell *matCellDef="let servidor">
-            {{ servidor.uptime_inicio ? (servidor.uptime_inicio | date: 'short') : '—' }}
+          <td>{{ servidor.uptime_inicio ? (servidor.uptime_inicio | date: 'short') : '—' }}</td>
+          <td class="actions-col">
+            <button pButton type="button" icon="pi pi-pencil" class="p-button-text" (click)="startEdit(servidor)"></button>
+            <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text" (click)="delete(servidor)"></button>
           </td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let servidor">
-            <button mat-icon-button aria-label="Editar" (click)="startEdit(servidor)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button aria-label="Excluir" color="warn" (click)="delete(servidor)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-      </table>
-      <p class="empty-state" *ngIf="servidores().length === 0">
-        Nenhum servidor cadastrado até o momento.
-      </p>
-    </div>
-
+        </tr>
+      </ng-template>
+    </p-table>
     <ng-template #loadingState>
       <div class="loading-state">
-        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
         <span>Carregando servidores...</span>
       </div>
     </ng-template>

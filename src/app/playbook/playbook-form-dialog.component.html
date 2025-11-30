@@ -1,46 +1,56 @@
-<h2 mat-dialog-title>{{ title() }}</h2>
-
-<mat-dialog-content>
-  <p class="dialog-subtitle">
-    Defina um nome amigável e o comando completo que será reutilizado.
-  </p>
-
-  <form [formGroup]="playbookForm" (ngSubmit)="submit()" class="playbook-form">
-    <mat-form-field appearance="outline">
-      <mat-label>Título</mat-label>
-      <input matInput formControlName="titulo" maxlength="150" />
-      <mat-error *ngIf="playbookForm.controls.titulo.hasError('required')">
-        Informe um título para o comando.
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Descrição (opcional)</mat-label>
-      <textarea matInput formControlName="descricao" rows="2" maxlength="400"></textarea>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="command-field">
-      <mat-label>Comando completo</mat-label>
-      <textarea
-        matInput
-        formControlName="comando"
-        rows="4"
-        cdkTextareaAutosize
-      ></textarea>
-      <mat-error *ngIf="playbookForm.controls.comando.hasError('required')">
-        Informe o comando que será reutilizado.
-      </mat-error>
-    </mat-form-field>
-
-    <mat-dialog-actions align="end">
-      <button mat-button type="button" (click)="cancel()">Cancelar</button>
-      <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
-        {{ data.mode === 'create' ? 'Salvar' : 'Atualizar' }}
-      </button>
-    </mat-dialog-actions>
-  </form>
-
-  <div class="dialog-overlay" *ngIf="saving()">
-    <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+<div class="dialog-shell">
+  <div class="dialog-header">
+    <h2 class="dialog-title">{{ title() }}</h2>
+    <p class="dialog-subtitle">
+      Defina um nome amigável e o comando completo que será reutilizado.
+    </p>
   </div>
-</mat-dialog-content>
+
+  <div class="dialog-content">
+    <form [formGroup]="playbookForm" (ngSubmit)="submit()" class="playbook-form">
+      <div class="form-row">
+        <label for="titulo">Título</label>
+        <input pInputText id="titulo" formControlName="titulo" maxlength="150" />
+        <small class="field-error" *ngIf="playbookForm.controls.titulo.hasError('required')">
+          Informe um título para o comando.
+        </small>
+      </div>
+
+      <div class="form-row">
+        <label for="descricao">Descrição (opcional)</label>
+        <textarea pTextarea id="descricao" formControlName="descricao" rows="2" maxlength="400"></textarea>
+      </div>
+
+      <div class="form-row">
+        <label for="comando">Comando completo</label>
+        <textarea
+          pTextarea
+          id="comando"
+          formControlName="comando"
+          rows="4"
+          class="command-field"
+        ></textarea>
+        <small class="field-error" *ngIf="playbookForm.controls.comando.hasError('required')">
+          Informe o comando que será reutilizado.
+        </small>
+      </div>
+
+      <p-divider></p-divider>
+
+      <div class="form-actions">
+        <button pButton type="button" label="Cancelar" class="p-button-text" (click)="cancel()"></button>
+        <button
+          pButton
+          type="submit"
+          [label]="data.mode === 'create' ? 'Salvar' : 'Atualizar'"
+          class="action-primary"
+          [loading]="saving()"
+        ></button>
+      </div>
+    </form>
+
+    <div class="dialog-overlay" *ngIf="saving()">
+      <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+    </div>
+  </div>
+</div>

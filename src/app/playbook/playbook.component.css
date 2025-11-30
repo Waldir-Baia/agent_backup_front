@@ -34,9 +34,33 @@
   flex-wrap: wrap;
 }
 
-.playbook-search {
-  width: 320px;
+.search-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 0.5rem 0.65rem 0.5rem 0.75rem;
+  background: #ffffff;
+  box-shadow: 0 8px 20px -18px rgba(0, 0, 0, 0.3);
+  min-width: 320px;
   max-width: 100%;
+}
+
+.search-field i {
+  color: rgba(29, 29, 29, 0.55);
+}
+
+.search-field input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 0.35rem 0.35rem;
+  font-size: 0.95rem;
+}
+
+.search-field input:focus {
+  outline: none;
 }
 
 .playbook-layout {
@@ -47,6 +71,10 @@
 
 .table-card {
   width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px -16px rgba(0, 0, 0, 0.35);
 }
 
 .table-header {
@@ -130,6 +158,26 @@
   gap: 0.25rem;
   padding-right: 0;
   padding-left: 1.8rem;
+}
+
+.actions-column .p-button {
+  margin-right: 0.25rem;
+}
+
+.table-header button.p-button {
+  background: linear-gradient(135deg, #127f0b, #0f6b0a);
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.45);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.table-header button.p-button:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
 }
 
 .state-wrapper {

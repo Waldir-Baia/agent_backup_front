@@ -2,6 +2,36 @@
   display: block;
 }
 
+:host ::ng-deep .mat-dialog-container {
+  padding: 0;
+  border-radius: 18px;
+  max-width: 640px;
+}
+
+.dialog-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem 1.5rem 1rem;
+}
+
+.dialog-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dialog-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.dialog-content {
+  position: relative;
+  padding: 0 0 1rem;
+}
+
 .dialog-subtitle {
   margin: 0 0 1rem;
   color: #6b7280;
@@ -13,22 +43,78 @@
   gap: 1rem;
 }
 
-.command-field textarea {
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.form-row label {
+  font-weight: 600;
+  color: rgba(29, 29, 29, 0.8);
+  margin-bottom: 0.15rem;
+}
+
+::ng-deep .playbook-form .p-inputtext,
+::ng-deep .playbook-form .p-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 0.9rem 1rem;
+  background: #ffffff;
+}
+
+::ng-deep .playbook-form .p-inputtext:focus,
+::ng-deep .playbook-form .p-textarea:focus {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: none;
+}
+
+.command-field {
   font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 }
 
-mat-dialog-actions button + button {
-  margin-left: 0.5rem;
+.field-error {
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.06);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.1rem;
 }
 
-mat-dialog-content {
-  position: relative;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
 }
 
-mat-dialog-content::-webkit-scrollbar {
-  display: none;
+.form-actions .p-button {
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+}
+
+.form-actions .p-button.p-button-text {
+  color: #127f0b;
+}
+
+.form-actions .p-button:not(.p-button-text) {
+  background: linear-gradient(135deg, #127f0b, #0f6b0a);
+  border: none;
+  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.45);
+}
+
+.form-actions .p-button:not(.p-button-text):hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
 }
 
 .dialog-overlay {
@@ -43,4 +129,3 @@ mat-dialog-content::-webkit-scrollbar {
 .dialog-overlay mat-progress-spinner {
   margin: 0;
 }
-

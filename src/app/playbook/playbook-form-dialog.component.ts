@@ -1,14 +1,13 @@
-import { TextFieldModule } from '@angular/cdk/text-field';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
+import { DividerModule } from 'primeng/divider';
 import {
   PlaybookCommand,
   PlaybookCommandInsert,
@@ -35,13 +34,12 @@ export type PlaybookDialogResult = {
     CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
     MatSnackBarModule,
-    MatIconModule,
     MatProgressSpinnerModule,
-    TextFieldModule
+    ButtonModule,
+    InputTextModule,
+    TextareaModule,
+    DividerModule
   ],
   templateUrl: './playbook-form-dialog.component.html',
   styleUrl: './playbook-form-dialog.component.css'

@@ -9,10 +9,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
+import { SelectModule } from 'primeng/select';
+import { DividerModule } from 'primeng/divider';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import {
   Agendamento,
   AgendamentoInsert,
@@ -38,8 +44,14 @@ type FormMode = 'create' | 'edit';
     MatIconModule,
     MatCardModule,
     MatSnackBarModule,
-    MatSlideToggleModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    DialogModule,
+    InputTextModule,
+    TextareaModule,
+    SelectModule,
+    ToggleSwitchModule,
+    ButtonModule,
+    DividerModule
   ],
   templateUrl: './agendamentos.component.html',
   styleUrl: './agendamentos.component.css'
@@ -67,15 +79,10 @@ export class AgendamentosComponent {
   protected readonly isFormVisible = signal(false);
 
   protected readonly clientFilterControl = this.formBuilder.nonNullable.control('');
-  protected readonly clientNameControl = this.formBuilder.nonNullable.control('');
   protected readonly clientSearchTerm = signal('');
-  protected readonly formClientSearchTerm = signal('');
 
   protected readonly filteredClientes = computed(() =>
     this.filterClientes(this.clientSearchTerm())
-  );
-  protected readonly filteredFormClientes = computed(() =>
-    this.filterClientes(this.formClientSearchTerm())
   );
   protected readonly clientDisplayWith = (clientId: string | null): string => {
     if (!clientId) {
@@ -107,16 +114,6 @@ export class AgendamentosComponent {
       .pipe(takeUntilDestroyed())
       .subscribe((value) => {
         this.clientSearchTerm.set(value.trim().toLowerCase());
-      });
-
-    this.clientNameControl.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((value) => {
-        const normalized = value.trim().toLowerCase();
-        this.formClientSearchTerm.set(normalized);
-        if (!value) {
-          this.agendamentoForm.controls.client_id.setValue('', { emitEvent: false });
-        }
       });
 
     effect(() => {
@@ -207,8 +204,6 @@ export class AgendamentosComponent {
       remote_path: agendamento.remote_path ?? '',
       is_active: agendamento.is_active
     });
-    this.clientNameControl.setValue(agendamento.client_id, { emitEvent: false });
-    this.formClientSearchTerm.set('');
     this.isFormVisible.set(true);
   }
 
@@ -217,12 +212,6 @@ export class AgendamentosComponent {
     this.formMode.set('create');
     this.editingAgendamento.set(null);
     this.resetForm(this.selectedClientId());
-  }
-
-  protected onFormClientSelected(clientId: string): void {
-    this.agendamentoForm.controls.client_id.setValue(clientId);
-    this.clientNameControl.setValue(clientId, { emitEvent: false });
-    this.formClientSearchTerm.set('');
   }
 
   protected async submit(): Promise<void> {
@@ -303,8 +292,6 @@ export class AgendamentosComponent {
       remote_path: '',
       is_active: true
     });
-    this.clientNameControl.setValue(defaultClientId ?? '', { emitEvent: false });
-    this.formClientSearchTerm.set('');
   }
 
   private filterClientes(term: string): Cliente[] {
@@ -366,4 +353,3 @@ export class AgendamentosComponent {
     }
   }
 }
-

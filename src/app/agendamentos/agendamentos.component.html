@@ -5,7 +5,7 @@
       <p>Configure os períodos de execução do Rclone para cada cliente.</p>
     </div>
 
-    <button mat-flat-button color="primary" (click)="showCreateForm()">Incluir agendamento</button>
+    <button pButton type="button" label="Incluir agendamento" icon="pi pi-plus" (click)="showCreateForm()"></button>
   </div>
 
   <section class="client-selector">
@@ -125,103 +125,101 @@
     }
   </section>
 
-  @if (isFormVisible()) {
-    <div class="overlay">
-      <mat-card class="agendamento-form-card">
-        <div class="overlay-header">
-          <h3>{{ formMode() === 'create' ? 'Criar agendamento' : 'Editar agendamento' }}</h3>
-          <button mat-icon-button type="button" aria-label="Fechar" (click)="closeForm()">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
+  <p-dialog
+    [visible]="isFormVisible()"
+    (visibleChange)="isFormVisible.set($event)"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '560px' }"
+    [contentStyle]="{ padding: '1.5rem' }"
+    (onHide)="closeForm()"
+    [dismissableMask]="true"
+    header="{{ formMode() === 'create' ? 'Criar agendamento' : 'Editar agendamento' }}"
+  >
+    <form [formGroup]="agendamentoForm" (ngSubmit)="submit()" class="agendamento-form">
+      <div class="form-row">
+        <label for="form_client_id">Cliente</label>
+        <p-select
+          id="form_client_id"
+          formControlName="client_id"
+          [options]="clientes()"
+          optionLabel="nome_empresa"
+          optionValue="client_id"
+          placeholder="Selecione um cliente"
+          [showClear]="true"
+        ></p-select>
+        <small class="field-error" *ngIf="agendamentoForm.controls.client_id.hasError('required')">
+          Informe o cliente do agendamento.
+        </small>
+      </div>
 
-        <form [formGroup]="agendamentoForm" (ngSubmit)="submit()" class="agendamento-form">
-          <input type="hidden" formControlName="client_id" />
+      <div class="form-row">
+        <label for="schedule_name">Nome do agendamento</label>
+        <input
+          pInputText
+          id="schedule_name"
+          formControlName="schedule_name"
+          placeholder="Backup incremental diário"
+        />
+        <small class="field-error" *ngIf="agendamentoForm.controls.schedule_name.hasError('required')">
+          Informe o nome do agendamento.
+        </small>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Cliente</mat-label>
-            <input
-              matInput
-              [formControl]="clientNameControl"
-              [matAutocomplete]="formClienteAutocomplete"
-              placeholder="Selecione um cliente"
-              autocomplete="off"
-            />
-            <mat-autocomplete
-              #formClienteAutocomplete="matAutocomplete"
-              [displayWith]="clientDisplayWith"
-              (optionSelected)="onFormClientSelected($event.option.value)"
-            >
-              <mat-option
-                *ngFor="let cliente of filteredFormClientes()"
-                [value]="cliente.client_id"
-              >
-                {{ cliente.nome_empresa }} - {{ formatCnpj(cliente.cnpj_empresa) }}
-              </mat-option>
-            </mat-autocomplete>
-            <mat-error *ngIf="agendamentoForm.controls.client_id.hasError('required')">
-              Informe o cliente do agendamento.
-            </mat-error>
-          </mat-form-field>
+      <div class="form-row">
+        <label for="rclone_command">Comando Rclone</label>
+        <textarea
+          pTextarea
+          id="rclone_command"
+          formControlName="rclone_command"
+          rows="4"
+          placeholder="rclone sync ..."
+        ></textarea>
+        <small class="field-error" *ngIf="agendamentoForm.controls.rclone_command.hasError('required')">
+          Informe o comando que será executado.
+        </small>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Nome do agendamento</mat-label>
-            <input
-              matInput
-              formControlName="schedule_name"
-              placeholder="Backup incremental diário"
-            />
-            <mat-error *ngIf="agendamentoForm.controls.schedule_name.hasError('required')">
-              Informe o nome do agendamento.
-            </mat-error>
-          </mat-form-field>
+      <div class="form-row">
+        <label for="cron_expression">Cron expression</label>
+        <input
+          pInputText
+          id="cron_expression"
+          formControlName="cron_expression"
+          placeholder="0 2 * * *"
+        />
+        <small class="field-error" *ngIf="agendamentoForm.controls.cron_expression.hasError('required')">
+          Informe a expressão cron.
+        </small>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Comando Rclone</mat-label>
-            <textarea
-              matInput
-              formControlName="rclone_command"
-              rows="4"
-              placeholder="rclone sync ..."
-            ></textarea>
-            <mat-error *ngIf="agendamentoForm.controls.rclone_command.hasError('required')">
-              Informe o comando que será executado.
-            </mat-error>
-          </mat-form-field>
+      <div class="form-row">
+        <label for="remote_path">Remote path (opcional)</label>
+        <input
+          pInputText
+          id="remote_path"
+          formControlName="remote_path"
+          placeholder="remote:path"
+        />
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Cron expression</mat-label>
-            <input
-              matInput
-              formControlName="cron_expression"
-              placeholder="0 2 * * *"
-            />
-            <mat-error *ngIf="agendamentoForm.controls.cron_expression.hasError('required')">
-              Informe a expressão cron.
-            </mat-error>
-          </mat-form-field>
+      <div class="form-row inline">
+        <label for="is_active">Ativo</label>
+        <p-toggleSwitch formControlName="is_active"></p-toggleSwitch>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Remote path (opcional)</mat-label>
-            <input
-              matInput
-              formControlName="remote_path"
-              placeholder="remote:path"
-            />
-          </mat-form-field>
+      <p-divider></p-divider>
 
-          <mat-slide-toggle formControlName="is_active" color="primary">
-            Ativo
-          </mat-slide-toggle>
-
-          <div class="form-actions">
-            <button mat-stroked-button type="button" (click)="closeForm()">Cancelar</button>
-            <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
-              {{ formMode() === 'create' ? 'Criar agendamento' : 'Salvar alterações' }}
-            </button>
-          </div>
-        </form>
-      </mat-card>
-    </div>
-  }
+      <div class="form-actions">
+        <button pButton type="button" label="Cancelar" class="p-button-text" (click)="closeForm()"></button>
+        <button
+          pButton
+          type="submit"
+          [label]="formMode() === 'create' ? 'Criar agendamento' : 'Salvar alterações'"
+          [loading]="saving()"
+        ></button>
+      </div>
+    </form>
+  </p-dialog>
 </section>

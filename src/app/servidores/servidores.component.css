@@ -34,6 +34,112 @@
   box-shadow: 0 8px 20px -16px rgba(0, 0, 0, 0.35);
 }
 
+.page-header button {
+  background: linear-gradient(135deg, #127f0b, #0f6b0a);
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.45);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.page-header button:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.form-actions .p-button {
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+}
+
+.form-actions .p-button.p-button-text {
+  color: #127f0b;
+}
+
+.form-actions .p-button:not(.p-button-text) {
+  background: linear-gradient(135deg, #127f0b, #0f6b0a);
+  border: none;
+  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.45);
+}
+
+.form-actions .p-button:not(.p-button-text):hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Dialog visual */
+:host ::ng-deep .p-dialog .p-dialog-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 1rem 1.5rem;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 0 1.5rem 1.5rem;
+}
+
+.servidor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-row label {
+  font-weight: 600;
+  color: rgba(29, 29, 29, 0.8);
+}
+
+::ng-deep .servidor-form .p-inputtext,
+::ng-deep .servidor-form .p-select,
+::ng-deep .servidor-form .p-textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 0.9rem 1rem;
+  background: #ffffff;
+}
+
+::ng-deep .servidor-form .p-inputtext:focus,
+::ng-deep .servidor-form .p-select.p-focus,
+::ng-deep .servidor-form .p-select.p-focus .p-select-label,
+::ng-deep .servidor-form .p-textarea:focus {
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: none;
+}
+
+::ng-deep .servidor-form .p-datepicker .p-inputtext {
+  padding: 0.85rem 1rem;
+}
+
+.field-error {
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.06);
+  border: 1px solid rgba(211, 47, 47, 0.2);
+  padding: 0.45rem 0.6rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
 .table-wrapper {
   overflow: auto;
 }

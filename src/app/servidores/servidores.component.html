@@ -4,7 +4,7 @@
       <h2>Servidores</h2>
       <p>Cadastre e acompanhe os servidores por cliente.</p>
     </div>
-    <button mat-flat-button color="primary" (click)="showCreateForm()">Adicionar novo</button>
+    <button pButton type="button" label="Adicionar novo" icon="pi pi-plus" (click)="showCreateForm()"></button>
   </div>
 
   <section class="servidores-table">
@@ -81,77 +81,107 @@
     </ng-template>
   </section>
 
-  @if (isFormVisible()) {
-    <div class="overlay">
-      <mat-card class="servidor-form-card">
-        <div class="overlay-header">
-          <h3>{{ formMode() === 'create' ? 'Cadastrar servidor' : 'Editar servidor' }}</h3>
-          <button mat-icon-button type="button" aria-label="Fechar" (click)="closeForm()">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
+  <p-dialog
+    [visible]="isFormVisible()"
+    (visibleChange)="isFormVisible.set($event)"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '560px' }"
+    [contentStyle]="{ padding: '1.5rem' }"
+    (onHide)="closeForm()"
+    [dismissableMask]="true"
+    header="{{ formMode() === 'create' ? 'Cadastrar servidor' : 'Editar servidor' }}"
+  >
+    <form [formGroup]="servidorForm" (ngSubmit)="submit()" class="servidor-form">
+      <div class="form-row">
+        <label for="cliente_id">Cliente</label>
+        <p-select
+          id="cliente_id"
+          formControlName="cliente_id"
+          [options]="clientes()"
+          optionLabel="nome_empresa"
+          optionValue="id"
+          placeholder="Selecione um cliente"
+          [showClear]="true"
+        ></p-select>
+        <small class="field-error" *ngIf="servidorForm.controls.cliente_id.hasError('required')">
+          Selecione o cliente.
+        </small>
+      </div>
 
-        <form [formGroup]="servidorForm" (ngSubmit)="submit()" class="servidor-form">
-          <mat-form-field appearance="outline">
-            <mat-label>Cliente</mat-label>
-            <mat-select formControlName="cliente_id" placeholder="Selecione um cliente">
-              <mat-option *ngFor="let cliente of clientes()" [value]="cliente.id">
-                {{ cliente.nome_empresa }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="servidorForm.controls.cliente_id.hasError('required')">
-              Selecione o cliente.
-            </mat-error>
-          </mat-form-field>
+      <div class="form-row">
+        <label for="nome">Nome do servidor</label>
+        <input pInputText id="nome" formControlName="nome" placeholder="Ex: Fileserver 01" />
+        <small class="field-error" *ngIf="servidorForm.controls.nome.hasError('required')">
+          Informe o nome do servidor.
+        </small>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Nome do servidor</mat-label>
-            <input matInput formControlName="nome" placeholder="Ex: Fileserver 01" />
-            <mat-error *ngIf="servidorForm.controls.nome.hasError('required')">
-              Informe o nome do servidor.
-            </mat-error>
-          </mat-form-field>
+      <div class="form-row">
+        <label for="endereco_ip">Endereço IP</label>
+        <input pInputText id="endereco_ip" formControlName="endereco_ip" placeholder="Ex: 10.0.0.12" />
+        <small class="field-error" *ngIf="servidorForm.controls.endereco_ip.hasError('required')">
+          Informe o IP do servidor.
+        </small>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Endereço IP</mat-label>
-            <input matInput formControlName="endereco_ip" placeholder="Ex: 10.0.0.12" />
-            <mat-error *ngIf="servidorForm.controls.endereco_ip.hasError('required')">
-              Informe o IP do servidor.
-            </mat-error>
-          </mat-form-field>
+      <div class="form-row">
+        <label for="sistema_operacional">Sistema operacional</label>
+        <input
+          pInputText
+          id="sistema_operacional"
+          formControlName="sistema_operacional"
+          placeholder="Ex: Ubuntu 22.04"
+        />
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Sistema operacional</mat-label>
-            <input matInput formControlName="sistema_operacional" placeholder="Ex: Ubuntu 22.04" />
-          </mat-form-field>
+      <div class="form-row">
+        <label for="status">Status</label>
+        <p-select
+          id="status"
+          formControlName="status"
+          [options]="statusOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecione o status"
+        ></p-select>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Status</mat-label>
-            <mat-select formControlName="status">
-              <mat-option *ngFor="let status of statusOptions" [value]="status.value">
-                {{ status.label }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+      <div class="form-row">
+        <label for="uptime_inicio">Uptime (início)</label>
+        <p-datepicker
+          id="uptime_inicio"
+          formControlName="uptime_inicio"
+          [showIcon]="true"
+          [showTime]="true"
+          hourFormat="24"
+          dateFormat="yy-mm-dd"
+        ></p-datepicker>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Uptime (início)</mat-label>
-            <input matInput type="datetime-local" formControlName="uptime_inicio" />
-          </mat-form-field>
+      <div class="form-row">
+        <label for="mensagem_erro">Mensagem de erro</label>
+        <textarea
+          pTextarea
+          id="mensagem_erro"
+          formControlName="mensagem_erro"
+          rows="2"
+          class="textarea-control"
+        ></textarea>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Mensagem de erro</mat-label>
-            <textarea matInput formControlName="mensagem_erro" rows="2"></textarea>
-          </mat-form-field>
+      <p-divider></p-divider>
 
-          <div class="form-actions">
-            <button mat-stroked-button type="button" (click)="closeForm()">Cancelar</button>
-            <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
-              {{ formMode() === 'create' ? 'Cadastrar' : 'Salvar alterações' }}
-            </button>
-          </div>
-        </form>
-      </mat-card>
-    </div>
-  }
+      <div class="form-actions">
+        <button pButton type="button" label="Cancelar" class="p-button-text" (click)="closeForm()"></button>
+        <button
+          pButton
+          type="submit"
+          [label]="formMode() === 'create' ? 'Cadastrar' : 'Salvar alterações'"
+          [loading]="saving()"
+        ></button>
+      </div>
+    </form>
+  </p-dialog>
 </section>

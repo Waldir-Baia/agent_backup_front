@@ -2,14 +2,17 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
+import { DividerModule } from 'primeng/divider';
+import { DatePickerModule } from 'primeng/datepicker';
 import {
   Cliente,
   Servidor,
@@ -34,14 +37,17 @@ const STATUS_OPTIONS: { value: number; label: string }[] = [
     CommonModule,
     ReactiveFormsModule,
     MatTableModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatCardModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    DialogModule,
+    InputTextModule,
+    TextareaModule,
+    SelectModule,
+    DatePickerModule,
+    ButtonModule,
+    DividerModule
   ],
   templateUrl: './servidores.component.html',
   styleUrl: './servidores.component.css'
@@ -75,7 +81,7 @@ export class ServidoresComponent {
     endereco_ip: this.formBuilder.control('', Validators.required),
     sistema_operacional: this.formBuilder.control(''),
     status: this.formBuilder.control(0, Validators.required),
-    uptime_inicio: this.formBuilder.control(''),
+    uptime_inicio: this.formBuilder.control<Date | null>(null),
     mensagem_erro: this.formBuilder.control('')
   });
 
@@ -120,7 +126,7 @@ export class ServidoresComponent {
       endereco_ip: '',
       sistema_operacional: '',
       status: 0,
-      uptime_inicio: '',
+      uptime_inicio: null,
       mensagem_erro: ''
     });
     this.isFormVisible.set(true);
@@ -135,7 +141,7 @@ export class ServidoresComponent {
       endereco_ip: servidor.endereco_ip,
       sistema_operacional: servidor.sistema_operacional ?? '',
       status: servidor.status ?? 0,
-      uptime_inicio: this.toLocalDateTimeInput(servidor.uptime_inicio),
+      uptime_inicio: this.toDateValue(servidor.uptime_inicio),
       mensagem_erro: servidor.mensagem_erro ?? ''
     });
     this.isFormVisible.set(true);
@@ -149,7 +155,7 @@ export class ServidoresComponent {
       endereco_ip: '',
       sistema_operacional: '',
       status: 0,
-      uptime_inicio: '',
+      uptime_inicio: null,
       mensagem_erro: ''
     });
     this.editingServidor.set(null);
@@ -166,20 +172,12 @@ export class ServidoresComponent {
     return found?.nome_empresa ?? `ID ${clienteId}`;
   }
 
-  protected toLocalDateTimeInput(value: string | null): string {
+  protected toDateValue(value: string | null): Date | null {
     if (!value) {
-      return '';
+      return null;
     }
-
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return '';
-    }
-
-    const pad = (num: number) => String(num).padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(
-      date.getHours()
-    )}:${pad(date.getMinutes())}`;
+    return Number.isNaN(date.getTime()) ? null : date;
   }
 
   protected async submit(): Promise<void> {
@@ -192,9 +190,13 @@ export class ServidoresComponent {
     const clienteId = formValue.cliente_id;
     const nome = formValue.nome?.trim() ?? '';
     const enderecoIp = formValue.endereco_ip?.trim() ?? '';
-    const uptimeISO = formValue.uptime_inicio
-      ? new Date(formValue.uptime_inicio).toISOString()
-      : null;
+    const uptimeValue = formValue.uptime_inicio;
+    const uptimeISO =
+      uptimeValue instanceof Date
+        ? uptimeValue.toISOString()
+        : uptimeValue
+        ? new Date(uptimeValue).toISOString()
+        : null;
 
     if (!clienteId || !nome || !enderecoIp) {
       this.servidorForm.markAllAsTouched();

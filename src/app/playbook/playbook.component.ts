@@ -5,7 +5,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { TableModule } from 'primeng/table';
 import {
   PlaybookCommand,
   SupabaseService
@@ -28,8 +27,7 @@ import {
     MatProgressSpinnerModule,
     MatDialogModule,
     ButtonModule,
-    InputTextModule,
-    TableModule
+    InputTextModule
   ],
   templateUrl: './playbook.component.html',
   styleUrl: './playbook.component.css'

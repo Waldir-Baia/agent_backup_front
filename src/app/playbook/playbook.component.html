@@ -37,38 +37,63 @@
       </header>
 
         <div class="table-wrapper" *ngIf="!loading(); else loadingState">
-          <p-table
-            [value]="filteredCommands()"
-            [paginator]="false"
-            class="playbook-table"
-            *ngIf="filteredCommands().length > 0; else emptyState"
-          >
-            <ng-template pTemplate="header">
-              <tr>
-                <th>Título</th>
-                <th>Descrição</th>
-                <th>Comando</th>
-                <th class="actions-column">Ações</th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-command>
-              <tr>
-                <td>
-                  <div class="cell-title">
-                    <strong>{{ command.titulo }}</strong>
-                    <span class="cell-meta">{{ command.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+          <ng-container *ngIf="filteredCommands().length > 0; else emptyState">
+            <div class="playbook-grid">
+              <article
+                class="playbook-card"
+                *ngFor="let command of filteredCommands(); trackBy: trackById"
+              >
+                <header class="playbook-card__header">
+                  <div>
+                    <span class="playbook-card__label">Título</span>
+                    <h3>{{ command.titulo }}</h3>
+                    <p class="playbook-card__meta">
+                      {{ command.created_at | date: 'dd/MM/yyyy HH:mm' }}
+                    </p>
                   </div>
-                </td>
-                <td>{{ command.descricao || 'Sem descrição' }}</td>
-                <td><pre class="command-preview">{{ command.comando }}</pre></td>
-                <td class="actions-column">
-                  <button pButton type="button" icon="pi pi-play" class="p-button-text" (click)="executeCommand(command)"></button>
-                  <button pButton type="button" icon="pi pi-pencil" class="p-button-text" (click)="openEditDialog(command)"></button>
-                  <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text" (click)="delete(command)"></button>
-                </td>
-              </tr>
-            </ng-template>
-          </p-table>
+                </header>
+
+                <div class="playbook-card__body">
+                  <div class="playbook-card__section">
+                    <span class="playbook-card__label">Descrição</span>
+                    <p>{{ command.descricao || 'Sem descrição' }}</p>
+                  </div>
+
+                  <div class="playbook-card__section">
+                    <span class="playbook-card__label">Comando</span>
+                    <pre class="command-preview">{{ command.comando }}</pre>
+                  </div>
+                </div>
+
+                <footer class="playbook-card__actions">
+                  <button
+                    pButton
+                    type="button"
+                    class="p-button-text"
+                    icon="pi pi-play"
+                    label="Executar"
+                    (click)="executeCommand(command)"
+                  ></button>
+                  <button
+                    pButton
+                    type="button"
+                    class="p-button-text"
+                    icon="pi pi-pencil"
+                    label="Editar"
+                    (click)="openEditDialog(command)"
+                  ></button>
+                  <button
+                    pButton
+                    type="button"
+                    class="p-button-danger p-button-text"
+                    icon="pi pi-trash"
+                    label="Excluir"
+                    (click)="delete(command)"
+                  ></button>
+                </footer>
+              </article>
+            </div>
+          </ng-container>
         </div>
     </div>
   </div>

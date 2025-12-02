@@ -6,123 +6,89 @@
     </div>
   </div>
 
-  <section class="client-selector">
-    <mat-card class="client-selector-card">
-      <div class="client-selector-card__header">
-        <div class="client-selector-card__icon">
-          <mat-icon>groups</mat-icon>
-        </div>
-        <div class="client-selector-card__copy">
-          <h3>Selecionar cliente</h3>
-          <p>Busque pelo nome ou CNPJ para visualizar os logs de envio.</p>
-        </div>
-      </div>
-
-      <mat-form-field appearance="fill" class="client-selector-field">
-        <mat-label>Cliente</mat-label>
-        <mat-icon matPrefix>search</mat-icon>
-        <input
-          matInput
-          [formControl]="clientFilterControl"
-          [matAutocomplete]="clienteAutocomplete"
-          placeholder="Digite para buscar..."
-          autocomplete="off"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          aria-label="Limpar seleção"
-          *ngIf="selectedClientId() || clientFilterControl.value"
-          (click)="clearClientSelection()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-        <mat-autocomplete
-          #clienteAutocomplete="matAutocomplete"
-          [displayWith]="clientDisplayWith"
-          (optionSelected)="onClientSelected($event.option.value)"
-        >
-          <mat-option
-            *ngFor="let cliente of filteredClientes()"
-            [value]="cliente.client_id"
-            class="client-option"
-          >
-            {{ cliente.nome_empresa }} - {{ formatCnpj(cliente.cnpj_empresa) }}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-    </mat-card>
+  <section class="logs-filters">
+    <div class="search-field">
+      <i class="pi pi-search"></i>
+      <input
+        pInputText
+        type="search"
+        placeholder="Filtrar por cliente, arquivo ou erro"
+        [value]="filterTerm()"
+        (input)="filterTerm.set($any($event.target).value)"
+      />
+      <button
+        pButton
+        *ngIf="filterTerm()"
+        type="button"
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="filterTerm.set('')"
+      ></button>
+    </div>
   </section>
 
-  <mat-card class="logs-card">
-    <mat-card-content>
-      <ng-container *ngIf="selectedClientId(); else emptySelection">
-        <div *ngIf="loading(); else tableContent" class="loading-state">
-          <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
-          <span>Carregando logs...</span>
-        </div>
-      </ng-container>
+  <div class="logs-card">
+    <div class="logs-card__content">
+      <div *ngIf="loading(); else tableContent" class="loading-state">
+        <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+        <span>Carregando logs...</span>
+      </div>
 
       <ng-template #tableContent>
-        <div class="table-wrapper">
-          <table mat-table [dataSource]="logs()" class="mat-elevation-z1">
-            <ng-container matColumnDef="client_id">
-              <th mat-header-cell *matHeaderCellDef>Client ID</th>
-              <td mat-cell *matCellDef="let log">{{ log.client_id }}</td>
-            </ng-container>
+        <ng-container *ngIf="logs().length > 0; else emptyState">
+          <section class="logs-grid">
+            <article class="log-card" *ngFor="let log of logs()">
+              <header class="log-card__header">
+                <div>
+                  <span class="log-card__label">Cliente</span>
+                  <p class="log-card__client">{{ log.client_id }}</p>
+                </div>
+                <div class="log-card__timestamp">
+                  <span class="log-card__label">Registrado em</span>
+                  <p>{{ log.created_at | date: 'dd/MM/yyyy HH:mm' }}</p>
+                </div>
+              </header>
 
-            <ng-container matColumnDef="file_name">
-              <th mat-header-cell *matHeaderCellDef>Arquivo</th>
-              <td mat-cell *matCellDef="let log">{{ log.file_name }}</td>
-            </ng-container>
+              <div class="log-card__meta">
+                <div class="meta-item">
+                  <span class="log-card__label">Arquivo</span>
+                  <p class="meta-value">{{ log.file_name }}</p>
+                </div>
+                <div class="meta-item">
+                  <span class="log-card__label">Tamanho</span>
+                  <p class="meta-value">{{ log.file_size_bytes | fileSize: 2 }}</p>
+                </div>
+                <div class="meta-item">
+                  <span class="log-card__label">Data do arquivo</span>
+                  <p class="meta-value">{{ log.file_creation_date | date: 'dd/MM/yyyy HH:mm' }}</p>
+                </div>
+              </div>
 
-            <ng-container matColumnDef="file_size_bytes">
-              <th mat-header-cell *matHeaderCellDef>Tamanho</th>
-              <td mat-cell *matCellDef="let log">{{ log.file_size_bytes | fileSize: 2 }}</td>
-            </ng-container>
+              <div
+                class="error-card"
+                [class.error-card--empty]="!log.error_message"
+                [attr.title]="log.error_message || ''"
+              >
+                {{ truncatedErrorMessage(log.error_message) }}
+              </div>
+            </article>
+          </section>
+        </ng-container>
 
-            <ng-container matColumnDef="file_creation_date">
-              <th mat-header-cell *matHeaderCellDef>Data do arquivo</th>
-              <td mat-cell *matCellDef="let log">
-                {{ log.file_creation_date | date: 'dd/MM/yyyy HH:mm' }}
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="error_message">
-              <th mat-header-cell *matHeaderCellDef>Erro</th>
-              <td mat-cell *matCellDef="let log" [class.has-error]="log.error_message">
-                {{ log.error_message || '—' }}
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="created_at">
-              <th mat-header-cell *matHeaderCellDef>Registrado em</th>
-              <td mat-cell *matCellDef="let log">
-                {{ log.created_at | date: 'dd/MM/yyyy HH:mm' }}
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-          </table>
-          <p class="empty-state" *ngIf="logs().length === 0">
-            Nenhum log encontrado para o cliente selecionado.
-          </p>
-        </div>
-
-        <mat-paginator
-          [length]="total()"
-          [pageIndex]="pageIndex()"
-          [pageSize]="pageSize()"
-          [pageSizeOptions]="pageSizeOptions"
-          (page)="handlePage($event)"
-        ></mat-paginator>
+        <p-paginator
+          [rows]="pageSize()"
+          [first]="pageIndex() * pageSize()"
+          [totalRecords]="total()"
+          [rowsPerPageOptions]="pageSizeOptions"
+          (onPageChange)="handlePage($event)"
+        ></p-paginator>
       </ng-template>
 
-      <ng-template #emptySelection>
-        <p class="empty-state">Selecione um cliente para visualizar os logs.</p>
+      <ng-template #emptyState>
+        <p class="empty-state">
+          Nenhum log encontrado.
+        </p>
       </ng-template>
-    </mat-card-content>
-  </mat-card>
+    </div>
+  </div>
 </section>

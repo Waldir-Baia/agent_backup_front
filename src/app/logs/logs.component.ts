@@ -1,19 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatOptionModule } from '@angular/material/core';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
+import { Component, effect, inject, signal } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Cliente, BackupLog, SupabaseService } from '../supabase.service';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { PaginatorModule, PaginatorState } from 'primeng/paginator';
+import { BackupLog, SupabaseService } from '../supabase.service';
 import { FileSizePipe } from '../shared/file-size.pipe';
 
 @Component({
@@ -22,17 +15,11 @@ import { FileSizePipe } from '../shared/file-size.pipe';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatAutocompleteModule,
-    MatOptionModule,
     MatSnackBarModule,
-    MatTableModule,
-    MatPaginatorModule,
     MatProgressSpinnerModule,
-    MatButtonModule,
-    MatInputModule,
-    MatIconModule,
+    ButtonModule,
+    InputTextModule,
+    PaginatorModule,
     FileSizePipe
   ],
   templateUrl: './logs.component.html',
@@ -42,96 +29,39 @@ export class LogsComponent {
   private readonly supabaseService = inject(SupabaseService);
   private readonly snackBar = inject(MatSnackBar);
 
-  protected readonly clientes = signal<Cliente[]>([]);
   protected readonly logs = signal<BackupLog[]>([]);
-  protected readonly selectedClientId = signal<string | null>(null);
   protected readonly loading = signal(false);
-  protected readonly clientFilterControl = new FormControl<string>('', { nonNullable: true });
-  protected readonly clientSearchTerm = signal('');
-  protected readonly filteredClientes = computed(() =>
-    this.filterClientes(this.clientSearchTerm())
-  );
-  protected readonly clientDisplayWith = (clientId: string | null): string => {
-    if (!clientId) {
-      return '';
-    }
-    const cliente = this.clientes().find((item) => item.client_id === clientId);
-    if (!cliente) {
-      return clientId;
-    }
-    const formattedCnpj = this.formatCnpj(cliente.cnpj_empresa);
-    return formattedCnpj ? `${cliente.nome_empresa} - ${formattedCnpj}` : cliente.nome_empresa;
-  };
-
+  protected readonly filterTerm = signal('');
   protected readonly pageIndex = signal(0);
   protected readonly pageSize = signal(10);
   protected readonly total = signal(0);
   protected readonly pageSizeOptions = [10, 20, 50];
-
-  protected readonly displayedColumns = [
-    'client_id',
-    'file_name',
-    'file_size_bytes',
-    'file_creation_date',
-    'error_message',
-    'created_at'
-  ];
+  private readonly errorPreviewLimit = 140;
 
   constructor() {
-    this.loadClientes();
-
-    this.clientFilterControl.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((value) => {
-        this.clientSearchTerm.set(value.trim().toLowerCase());
-      });
-
     effect(() => {
-      const selected = this.selectedClientId();
-      if (!selected) {
-        return;
-      }
-      const exists = this.clientes().some((cliente) => cliente.client_id === selected);
-      if (!exists) {
-        this.clearClientSelection();
-      } else {
-        this.clientFilterControl.setValue(selected, { emitEvent: false });
-      }
+      this.filterTerm();
+      this.pageIndex.set(0);
+      void this.loadLogs();
     });
   }
 
-  protected async loadClientes(): Promise<void> {
-    try {
-      const data = await this.supabaseService.listClientes();
-      this.clientes.set(data);
-    } catch (error) {
-      console.error('Erro ao carregar clientes', error);
-      this.snackBar.open('Não foi possível carregar os clientes.', 'Fechar', {
-        duration: 4000
-      });
-    }
-  }
-
-  protected async handlePage(event: PageEvent): Promise<void> {
-    this.pageIndex.set(event.pageIndex);
-    this.pageSize.set(event.pageSize);
+  protected async handlePage(event: PaginatorState): Promise<void> {
+    const rows = event.rows ?? this.pageSize();
+    const page =
+      event.page ?? (event.first !== undefined ? Math.floor(event.first / rows) : this.pageIndex());
+    this.pageIndex.set(page);
+    this.pageSize.set(rows);
     await this.loadLogs();
   }
 
   protected async loadLogs(): Promise<void> {
-    const clientId = this.selectedClientId();
-    if (!clientId) {
-      this.logs.set([]);
-      this.total.set(0);
-      return;
-    }
-
     this.loading.set(true);
     try {
-      const { data, total } = await this.supabaseService.listBackupLogs(
-        clientId,
+      const { data, total } = await this.supabaseService.listBackupLogsGlobal(
         this.pageIndex(),
-        this.pageSize()
+        this.pageSize(),
+        this.filterTerm()
       );
       this.logs.set(data);
       this.total.set(total);
@@ -145,58 +75,16 @@ export class LogsComponent {
     }
   }
 
-  protected async onClientSelected(clientId: string): Promise<void> {
-    const cliente = this.clientes().find((item) => item.client_id === clientId);
-    if (!cliente) {
-      return;
+  protected truncatedErrorMessage(message: string | null | undefined): string {
+    if (!message) {
+      return '—';
     }
 
-    this.clientFilterControl.setValue(cliente.client_id, { emitEvent: false });
-    this.clientSearchTerm.set('');
-    this.selectedClientId.set(cliente.client_id);
-    this.pageIndex.set(0);
-    await this.loadLogs();
-  }
-
-  protected clearClientSelection(): void {
-    this.clientFilterControl.setValue('', { emitEvent: false });
-    this.clientSearchTerm.set('');
-    this.selectedClientId.set(null);
-    this.logs.set([]);
-    this.total.set(0);
-    this.pageIndex.set(0);
-  }
-
-  protected formatCnpj(value: string | null | undefined): string {
-    if (!value) {
-      return '';
-    }
-    const digits = value.replace(/\D/g, '');
-    if (digits.length !== 14) {
-      return value;
-    }
-    return digits.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
-  }
-
-  private filterClientes(term: string): Cliente[] {
-    const normalized = term.trim().toLowerCase();
-    if (!normalized) {
-      return this.clientes();
+    const normalized = message.trim();
+    if (normalized.length <= this.errorPreviewLimit) {
+      return normalized;
     }
 
-    const searchDigits = normalized.replace(/\D/g, '');
-
-    return this.clientes().filter((cliente) => {
-      const nome = cliente.nome_empresa?.toLowerCase() ?? '';
-      const id = cliente.client_id?.toLowerCase() ?? '';
-      const cnpjDigits = (cliente.cnpj_empresa ?? '').replace(/\D/g, '');
-      const cnpjFormatted = this.formatCnpj(cliente.cnpj_empresa).toLowerCase();
-      return (
-        nome.includes(normalized) ||
-        id.includes(normalized) ||
-        (searchDigits.length > 0 && cnpjDigits.includes(searchDigits)) ||
-        cnpjFormatted.includes(normalized)
-      );
-    });
+    return normalized.slice(0, this.errorPreviewLimit).trimEnd().concat('…');
   }
 }

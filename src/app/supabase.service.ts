@@ -549,6 +549,31 @@ export class SupabaseService {
     };
   }
 
+  async listBackupLogsGlobal(page: number, pageSize: number, term?: string) {
+    const from = page * pageSize;
+    const to = from + pageSize - 1;
+    let query = this.getClient()
+      .from('backup_logs')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (term) {
+      query = query.ilike('file_name', `%${term}%`);
+    }
+
+    const { data, error, count } = await query;
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return {
+      data: (data ?? []) as BackupLog[],
+      total: count ?? 0
+    };
+  }
+
   async listServidores(clienteId?: number): Promise<Servidor[]> {
     let query = this.getClient()
       .from('servidores')

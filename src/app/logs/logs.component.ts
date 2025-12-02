@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
-import { BackupLog, SupabaseService } from '../supabase.service';
+import { BackupLog, Cliente, SupabaseService } from '../supabase.service';
 import { FileSizePipe } from '../shared/file-size.pipe';
 
 @Component({
@@ -30,15 +30,27 @@ export class LogsComponent {
   private readonly snackBar = inject(MatSnackBar);
 
   protected readonly logs = signal<BackupLog[]>([]);
+  protected readonly clientes = signal<Cliente[]>([]);
+  protected readonly clienteLookup = computed<Record<string, string>>(() => {
+    const lookup: Record<string, string> = {};
+    for (const cliente of this.clientes()) {
+      if (cliente.client_id) {
+        lookup[cliente.client_id] = cliente.nome_empresa ?? cliente.client_id;
+      }
+    }
+    return lookup;
+  });
   protected readonly loading = signal(false);
   protected readonly filterTerm = signal('');
   protected readonly pageIndex = signal(0);
   protected readonly pageSize = signal(10);
   protected readonly total = signal(0);
   protected readonly pageSizeOptions = [10, 20, 50];
+  protected readonly expandedLogId = signal<number | null>(null);
   private readonly errorPreviewLimit = 140;
 
   constructor() {
+    void this.loadClientes();
     effect(() => {
       this.filterTerm();
       this.pageIndex.set(0);
@@ -75,6 +87,26 @@ export class LogsComponent {
     }
   }
 
+  private async loadClientes(): Promise<void> {
+    try {
+      const data = await this.supabaseService.listClientes();
+      this.clientes.set(data);
+    } catch (error) {
+      console.error('Erro ao carregar clientes', error);
+      this.snackBar.open('Não foi possível carregar a lista de clientes.', 'Fechar', {
+        duration: 4000
+      });
+    }
+  }
+
+  protected toggleLogExpansion(logId: number): void {
+    this.expandedLogId.set(this.expandedLogId() === logId ? null : logId);
+  }
+
+  protected isExpanded(logId: number): boolean {
+    return this.expandedLogId() === logId;
+  }
+
   protected truncatedErrorMessage(message: string | null | undefined): string {
     if (!message) {
       return '—';
@@ -86,5 +118,9 @@ export class LogsComponent {
     }
 
     return normalized.slice(0, this.errorPreviewLimit).trimEnd().concat('…');
+  }
+
+  protected clientName(clientId: string): string {
+    return this.clienteLookup()[clientId] ?? clientId;
   }
 }

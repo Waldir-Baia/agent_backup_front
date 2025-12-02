@@ -18,7 +18,6 @@ import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { DividerModule } from 'primeng/divider';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { TableModule } from 'primeng/table';
 import {
   Agendamento,
   AgendamentoInsert,
@@ -50,8 +49,7 @@ type FormMode = 'create' | 'edit';
     SelectModule,
     ToggleSwitchModule,
     ButtonModule,
-    DividerModule,
-    TableModule
+    DividerModule
   ],
   templateUrl: './agendamentos.component.html',
   styleUrl: './agendamentos.component.css'

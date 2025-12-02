@@ -27,26 +27,6 @@
   color: rgba(29, 29, 29, 0.7);
 }
 
-.page-header button {
-  background: linear-gradient(135deg, #127f0b, #0f6b0a);
-  border: none;
-  color: #ffffff;
-  font-weight: 700;
-  border-radius: 12px;
-  padding: 0.85rem 1.2rem;
-  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.45);
-  transition: transform 0.15s ease, filter 0.15s ease;
-}
-
-.page-header button:hover:not(:disabled) {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
-}
-
-.client-selector {
-  width: 100%;
-}
-
 .agendamentos-filters {
   display: flex;
   justify-content: flex-end;
@@ -91,26 +71,6 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
-}
-
-.form-actions .p-button {
-  border-radius: 12px;
-  padding: 0.85rem 1.2rem;
-}
-
-.form-actions .p-button.p-button-text {
-  color: #127f0b;
-}
-
-.form-actions .p-button:not(.p-button-text) {
-  background: linear-gradient(135deg, #127f0b, #0f6b0a);
-  border: none;
-  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.45);
-}
-
-.form-actions .p-button:not(.p-button-text):hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
 }
 
 :host ::ng-deep .p-dialog .p-dialog-header {
@@ -164,46 +124,62 @@
   margin: 0;
 }
 
-.agendamentos-table {
+.agendamentos-list {
+  width: 100%;
+}
+
+.agendamentos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.agendamento-card {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 1.5rem;
-  box-shadow: 0 8px 20px -16px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 18px 40px -32px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.agendamentos-table__grid {
-  width: 100%;
+.agendamento-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-:host ::ng-deep .agendamentos-table__grid .p-datatable-thead > tr > th {
-  color: rgba(29, 29, 29, 0.7);
+.agendamento-card__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(29, 29, 29, 0.55);
+}
+
+.agendamento-card__header h3 {
+  margin: 0.35rem 0 0;
+  font-size: 1.25rem;
   font-weight: 600;
-  padding: 0.75rem;
+  color: #1d1d1d;
 }
 
-:host ::ng-deep .agendamentos-table__grid .p-datatable-tbody > tr > td {
-  padding: 0.75rem;
-  vertical-align: top;
-}
-
-.command-cell code {
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: 'JetBrains Mono', monospace;
-  background-color: rgba(29, 29, 29, 0.04);
-  padding: 0.35rem 0.5rem;
-  border-radius: 8px;
-  display: inline-block;
-  width: 100%;
+.agendamento-card__subtle {
+  margin: 0.25rem 0 0;
+  color: rgba(29, 29, 29, 0.65);
 }
 
 .status-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.15rem 0.75rem;
+  padding: 0.3rem 0.85rem;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
   background-color: rgba(29, 29, 29, 0.1);
   color: rgba(29, 29, 29, 0.7);
 }
@@ -211,6 +187,45 @@
 .status-chip.active {
   background-color: rgba(18, 127, 11, 0.15);
   color: #127f0b;
+}
+
+.agendamento-card__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+.agendamento-card__meta p {
+  margin: 0.4rem 0 0;
+  font-weight: 500;
+  color: #1d1d1d;
+}
+
+.agendamento-card__command {
+  background: rgba(29, 29, 29, 0.04);
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.agendamento-card__command code {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: 'JetBrains Mono', monospace;
+  color: #1d1d1d;
+}
+
+.agendamento-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
 .empty-state {
@@ -225,27 +240,4 @@
   justify-content: center;
   gap: 1rem;
   color: rgba(29, 29, 29, 0.6);
-}
-
-button[mat-icon-button][color='warn'] mat-icon {
-  color: #d32f2f;
-}
-
-@media (max-width: 960px) {
-  .overlay {
-    padding: 1rem;
-  }
-
-  .agendamento-form-card {
-    padding: 1.75rem 1.5rem 2rem;
-  }
-
-  .client-selector-card {
-    padding: 1.5rem;
-  }
-
-  .client-selector-card__icon {
-    width: 40px;
-    height: 40px;
-  }
 }

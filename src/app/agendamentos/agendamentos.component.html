@@ -29,40 +29,61 @@
     </div>
   </div>
 
-  <section class="agendamentos-table">
+  <section class="agendamentos-list">
     @if (!loading()) {
-      <p-table [value]="filteredAgendamentos()" [paginator]="false" class="agendamentos-table__grid">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Nome</th>
-            <th>Cliente</th>
-            <th>Comando</th>
-            <th>Cron</th>
-            <th>Status</th>
-            <th class="actions-col"></th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-agendamento>
-          <tr>
-            <td>{{ agendamento.schedule_name }}</td>
-            <td>{{ clientDisplayName(agendamento.client_id) }}</td>
-            <td class="command-cell"><code>{{ agendamento.rclone_command }}</code></td>
-            <td>{{ agendamento.cron_expression }}</td>
-            <td>
+      @if (filteredAgendamentos().length > 0) {
+        <div class="agendamentos-grid">
+          <article class="agendamento-card" *ngFor="let agendamento of filteredAgendamentos()">
+            <header class="agendamento-card__header">
+              <div>
+                <span class="agendamento-card__label">Agendamento</span>
+                <h3>{{ agendamento.schedule_name }}</h3>
+                <p class="agendamento-card__subtle">{{ clientDisplayName(agendamento.client_id) }}</p>
+              </div>
               <span class="status-chip" [class.active]="agendamento.is_active">
                 {{ agendamento.is_active ? 'Ativo' : 'Inativo' }}
               </span>
-            </td>
-            <td class="actions-col">
-              <button pButton type="button" icon="pi pi-pencil" class="p-button-text" (click)="startEdit(agendamento)"></button>
-              <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text" (click)="delete(agendamento)"></button>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-      <p class="empty-state" *ngIf="filteredAgendamentos().length === 0">
-        Nenhum agendamento encontrado com o filtro atual.
-      </p>
+            </header>
+
+            <div class="agendamento-card__meta">
+              <div>
+                <span class="agendamento-card__label">Cron</span>
+                <p>{{ agendamento.cron_expression }}</p>
+              </div>
+              <div>
+                <span class="agendamento-card__label">Remote path</span>
+                <p>{{ agendamento.remote_path || '—' }}</p>
+              </div>
+            </div>
+
+            <div class="agendamento-card__command">
+              <span class="agendamento-card__label">Comando</span>
+              <code>{{ agendamento.rclone_command }}</code>
+            </div>
+
+            <footer class="agendamento-card__actions">
+              <button
+                pButton
+                type="button"
+                class="p-button-text"
+                icon="pi pi-pencil"
+                label="Editar"
+                (click)="startEdit(agendamento)"
+              ></button>
+              <button
+                pButton
+                type="button"
+                class="p-button-danger p-button-text"
+                icon="pi pi-trash"
+                label="Excluir"
+                (click)="delete(agendamento)"
+              ></button>
+            </footer>
+          </article>
+        </div>
+      } @else {
+        <p class="empty-state">Nenhum agendamento encontrado com o filtro atual.</p>
+      }
     } @else {
       <div class="loading-state">
         <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>

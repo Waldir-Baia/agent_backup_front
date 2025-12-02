@@ -39,3 +39,39 @@ button[mat-stroked-button][color='primary'] {
   color: #127f0b;
   background-color: transparent;
 }
+
+.page-header button {
+  background: linear-gradient(135deg, #127f0b, #0f6b0a);
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.45);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.page-header button:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.form-actions .p-button {
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+}
+
+.form-actions .p-button.p-button-text {
+  color: #127f0b;
+}
+
+.form-actions .p-button:not(.p-button-text) {
+  background: linear-gradient(135deg, #127f0b, #0f6b0a);
+  border: none;
+  box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.45);
+}
+
+.form-actions .p-button:not(.p-button-text):hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}

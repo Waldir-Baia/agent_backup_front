@@ -7,48 +7,81 @@
     <button pButton type="button" label="Adicionar novo" icon="pi pi-plus" (click)="showCreateForm()"></button>
   </div>
 
-  <section class="servidores-table">
-    <p-table
-      *ngIf="!loading(); else loadingState"
-      [value]="servidores()"
-      [paginator]="false"
-      class="servidores-table__grid"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Cliente</th>
-          <th>Servidor</th>
-          <th>Endereço IP</th>
-          <th>Sistema operacional</th>
-          <th>Status</th>
-          <th>Uptime</th>
-          <th class="actions-col"></th>
-        </tr>
+  <section class="servidores-list">
+    <ng-container *ngIf="!loading(); else loadingState">
+      <ng-container *ngIf="servidores().length > 0; else emptyState">
+        <div class="servidores-grid">
+          <article class="servidor-card" *ngFor="let servidor of servidores()">
+            <header class="servidor-card__header">
+              <div>
+                <span class="servidor-card__label">Servidor</span>
+                <h3>{{ servidor.nome }}</h3>
+                <p class="servidor-card__subtle">{{ clienteNome(servidor.cliente_id) }}</p>
+              </div>
+              <div class="servidor-card__status">
+                <span class="servidor-card__label">Status</span>
+                <span
+                  class="status-pill"
+                  [class.status-pill--warning]="servidor.status === 2"
+                  [class.status-pill--danger]="servidor.status === 3"
+                  [class.status-pill--inactive]="servidor.status === 0"
+                >
+                  {{ statusLabel(servidor.status) }}
+                </span>
+              </div>
+            </header>
+
+            <div class="servidor-card__meta">
+              <div>
+                <span class="servidor-card__label">Endereço IP</span>
+                <p>{{ servidor.endereco_ip }}</p>
+              </div>
+              <div>
+                <span class="servidor-card__label">Sistema operacional</span>
+                <p>{{ servidor.sistema_operacional || 'Não informado' }}</p>
+              </div>
+              <div>
+                <span class="servidor-card__label">Uptime</span>
+                <p>{{ servidor.uptime_inicio ? (servidor.uptime_inicio | date: 'dd/MM/yyyy HH:mm') : '—' }}</p>
+              </div>
+            </div>
+
+            <div class="servidor-card__error" *ngIf="servidor.mensagem_erro; else noError">
+              <span class="servidor-card__label">Último erro</span>
+              <p>{{ servidor.mensagem_erro }}</p>
+            </div>
+            <ng-template #noError>
+              <div class="servidor-card__error servidor-card__error--empty">
+                <span class="servidor-card__label">Último erro</span>
+                <p>Nenhum erro registrado.</p>
+              </div>
+            </ng-template>
+
+            <footer class="servidor-card__actions">
+              <button
+                pButton
+                type="button"
+                class="p-button-text"
+                icon="pi pi-pencil"
+                label="Editar"
+                (click)="startEdit(servidor)"
+              ></button>
+              <button
+                pButton
+                type="button"
+                class="p-button-danger p-button-text"
+                icon="pi pi-trash"
+                label="Excluir"
+                (click)="delete(servidor)"
+              ></button>
+            </footer>
+          </article>
+        </div>
+      </ng-container>
+      <ng-template #emptyState>
+        <p class="empty-state">Nenhum servidor cadastrado até o momento.</p>
       </ng-template>
-      <ng-template pTemplate="body" let-servidor>
-        <tr>
-          <td>{{ clienteNome(servidor.cliente_id) }}</td>
-          <td>{{ servidor.nome }}</td>
-          <td>{{ servidor.endereco_ip }}</td>
-          <td>{{ servidor.sistema_operacional || 'Não informado' }}</td>
-          <td>
-            <span
-              class="status-pill"
-              [class.status-pill--warning]="servidor.status === 2"
-              [class.status-pill--danger]="servidor.status === 3"
-              [class.status-pill--inactive]="servidor.status === 0"
-            >
-              {{ statusLabel(servidor.status) }}
-            </span>
-          </td>
-          <td>{{ servidor.uptime_inicio ? (servidor.uptime_inicio | date: 'short') : '—' }}</td>
-          <td class="actions-col">
-            <button pButton type="button" icon="pi pi-pencil" class="p-button-text" (click)="startEdit(servidor)"></button>
-            <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text" (click)="delete(servidor)"></button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+    </ng-container>
     <ng-template #loadingState>
       <div class="loading-state">
         <span>Carregando servidores...</span>

@@ -10,7 +10,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DividerModule } from 'primeng/divider';
 import { DatePickerModule } from 'primeng/datepicker';
-import { TableModule } from 'primeng/table';
 import {
   Cliente,
   Servidor,
@@ -42,8 +41,7 @@ const STATUS_OPTIONS: { value: number; label: string }[] = [
     SelectModule,
     DatePickerModule,
     ButtonModule,
-    DividerModule,
-    TableModule
+    DividerModule
   ],
   templateUrl: './servidores.component.html',
   styleUrl: './servidores.component.css'

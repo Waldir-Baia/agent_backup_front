@@ -7,39 +7,54 @@
     <button pButton type="button" label="Adicionar novo" icon="pi pi-plus" (click)="showCreateForm()"></button>
   </div>
 
-  <section class="clientes-table">
-    <p-table
-      *ngIf="!loading(); else loadingState"
-      [value]="clientes()"
-      [paginator]="false"
-      class="clientes-table__grid"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Client ID</th>
-          <th>Empresa</th>
-          <th>CNPJ</th>
-          <th>Ativo</th>
-          <th class="actions-col"></th>
-        </tr>
+  <section class="clientes-list">
+    <ng-container *ngIf="!loading(); else loadingState">
+      <ng-container *ngIf="clientes().length > 0; else emptyState">
+        <div class="clientes-grid">
+          <article class="cliente-card" *ngFor="let cliente of clientes()">
+            <header class="cliente-card__header">
+              <div>
+                <span class="cliente-card__label">Cliente</span>
+                <h3>{{ cliente.nome_empresa || 'Sem nome' }}</h3>
+                <p class="cliente-card__id">{{ cliente.client_id }}</p>
+              </div>
+              <span class="status-pill" [class.status-pill--inactive]="!cliente.ativo">
+                {{ cliente.ativo ? 'Ativo' : 'Inativo' }}
+              </span>
+            </header>
+
+            <div class="cliente-card__meta">
+              <div>
+                <span class="cliente-card__label">CNPJ</span>
+                <p>{{ cliente.cnpj_empresa || '—' }}</p>
+              </div>
+            </div>
+
+            <footer class="cliente-card__actions">
+              <button
+                pButton
+                type="button"
+                class="p-button-text"
+                icon="pi pi-pencil"
+                label="Editar"
+                (click)="startEdit(cliente)"
+              ></button>
+              <button
+                pButton
+                type="button"
+                class="p-button-danger p-button-text"
+                icon="pi pi-trash"
+                label="Excluir"
+                (click)="delete(cliente)"
+              ></button>
+            </footer>
+          </article>
+        </div>
+      </ng-container>
+      <ng-template #emptyState>
+        <p class="empty-state">Nenhum cliente cadastrado ainda.</p>
       </ng-template>
-      <ng-template pTemplate="body" let-cliente>
-        <tr>
-          <td>{{ cliente.client_id }}</td>
-          <td>{{ cliente.nome_empresa }}</td>
-          <td>{{ cliente.cnpj_empresa }}</td>
-          <td>
-            <span class="status-pill" [class.status-pill--inactive]="!cliente.ativo">
-              {{ cliente.ativo ? 'Sim' : 'Não' }}
-            </span>
-          </td>
-          <td class="actions-col">
-            <button pButton type="button" icon="pi pi-pencil" class="p-button-text" (click)="startEdit(cliente)"></button>
-            <button pButton type="button" icon="pi pi-trash" class="p-button-danger p-button-text" (click)="delete(cliente)"></button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+    </ng-container>
     <ng-template #loadingState>
       <div class="loading-state">
         <span>Carregando clientes...</span>

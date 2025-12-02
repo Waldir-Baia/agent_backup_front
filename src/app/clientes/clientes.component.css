@@ -42,12 +42,76 @@
   transform: translateY(-1px);
 }
 
-.clientes-table {
+.clientes-list {
   width: 100%;
+}
+
+.clientes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cliente-card {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 1.5rem;
-  box-shadow: 0 8px 20px -16px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 18px 40px -32px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cliente-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cliente-card__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(29, 29, 29, 0.55);
+}
+
+.cliente-card__header h3 {
+  margin: 0.35rem 0 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1d1d1d;
+}
+
+.cliente-card__id {
+  margin: 0.2rem 0 0;
+  font-size: 0.95rem;
+  color: rgba(29, 29, 29, 0.65);
+  word-break: break-word;
+}
+
+.cliente-card__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+.cliente-card__meta p {
+  margin: 0.35rem 0 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1d1d1d;
+}
+
+.cliente-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
 /* Diálogo com fundo sólido e cantos suaves */
@@ -66,30 +130,6 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.table-wrapper {
-  overflow: auto;
-}
-
-.clientes-table__grid {
-  width: 100%;
-}
-
-:host ::ng-deep .clientes-table__grid .p-datatable-thead > tr > th {
-  color: rgba(29, 29, 29, 0.7);
-  font-weight: 600;
-  padding: 0.75rem;
-}
-
-:host ::ng-deep .clientes-table__grid .p-datatable-tbody > tr > td {
-  padding: 0.75rem;
-  vertical-align: middle;
-}
-
-.actions-col {
-  text-align: right;
-  width: 120px;
 }
 
 .empty-state {

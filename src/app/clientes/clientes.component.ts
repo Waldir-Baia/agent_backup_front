@@ -7,7 +7,6 @@ import { DialogModule } from 'primeng/dialog';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { DividerModule } from 'primeng/divider';
-import { TableModule } from 'primeng/table';
 import { Cliente, ClienteInsert, ClienteUpdate, SupabaseService } from '../supabase.service';
 
 type FormMode = 'create' | 'edit';
@@ -23,8 +22,7 @@ type FormMode = 'create' | 'edit';
     InputTextModule,
     ToggleSwitchModule,
     ButtonModule,
-    DividerModule,
-    TableModule
+    DividerModule
   ],
   templateUrl: './clientes.component.html',
   styleUrl: './clientes.component.css'
